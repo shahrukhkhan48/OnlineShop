@@ -7,6 +7,10 @@ class OnlineShopStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
 
+    const api = new apigateway.RestApi(this, 'ProductAPI');
+
+    // Categories
+
     const fetchAllCategoriesLambda = new lambdaNodejs.NodejsFunction(this, 'FetchAllCategoriesFunction', {
       entry: 'lib/handlers/fetch-all-categories.ts',
       handler: 'handler',
@@ -27,13 +31,28 @@ class OnlineShopStack extends Stack {
       }
     });
 
-    const api = new apigateway.RestApi(this, 'ProductAPI');
+    const listProductsByCategoryLambda = new lambdaNodejs.NodejsFunction(this, 'ListProductsByCategoryFunction', {
+      entry: 'lib/handlers/list-products-by-category.ts',
+      handler: 'handler',
+      bundling: {
+        minify: true,
+        sourceMap: true,
+        target: 'ES2020',
+      }
+    });
 
     const categoryResource = api.root.addResource('categories');
     categoryResource.addMethod('GET', new apigateway.LambdaIntegration(fetchAllCategoriesLambda));
 
     const singleCategoryResource = categoryResource.addResource('{categoryId}');
     singleCategoryResource.addMethod('GET', new apigateway.LambdaIntegration(getCategoryByIdLambda));
+
+    const productsUnderCategoryResource = singleCategoryResource.addResource('products');
+    productsUnderCategoryResource.addMethod('GET', new apigateway.LambdaIntegration(listProductsByCategoryLambda));
+
+
+    // Products
+
 
     // Add other resources and methods
 

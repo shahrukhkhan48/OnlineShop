@@ -1,5 +1,5 @@
 import { ProductRepository } from '../repositories/product-repository';
-import {ProductCategory} from "../models/product";
+import {Product, ProductCategory} from "../models/product";
 
 export class ProductService {
     private repo: ProductRepository;
@@ -14,6 +14,10 @@ export class ProductService {
 
     getCategoryById(id: number): ProductCategory | undefined {
         return this.repo.getCategoryById(id);
+    }
+
+    listProductsByCategory(categoryId: number): Product[] {
+        return this.repo.getProductsByCategory(categoryId);
     }
     // Add more methods for other operations
 }

@@ -4,14 +4,17 @@ export const ProductSchema = z.object({
     Id: z.number(),
     Name: z.string(),
     Description: z.string(),
-    Price: z.bigint(),
+    Price: z.number(),
     Weight: z.number(),
     Category: z.object({
         Id: z.number(),
         Name: z.string(),
         Description: z.string()
     }),
-    Supplier: z.string(), // Adjust as needed
+    Supplier: z.object({
+        Id: z.number(),
+        Name: z.string()
+    }),
     ImageUrl: z.string()
 });
 
@@ -24,3 +27,11 @@ export const ProductCategorySchema = z.object({
 });
 
 export type ProductCategory = z.infer<typeof ProductCategorySchema>;
+
+// Adding a schema for Supplier if you need it elsewhere
+export const SupplierSchema = z.object({
+    Id: z.number(),
+    Name: z.string()
+});
+
+export type Supplier = z.infer<typeof SupplierSchema>;
