@@ -149,6 +149,14 @@ export class ProductRepository {
         return this.products[index];
     }
 
+    deleteProductById(productId: number): void {
+        const index = this.products.findIndex(product => product.Id === productId);
+        if (index === -1) {
+            throw new Error("Product not found");
+        }
+        this.products.splice(index, 1);
+    }
+
     getSupplierById(id: number): Supplier | undefined {
         return this.suppliers.find(supplier => supplier.Id === id);
     }

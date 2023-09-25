@@ -101,9 +101,19 @@ class OnlineShopStack extends Stack {
         target: 'ES2020',
       }
     });
+    const deleteProductLambda = new lambdaNodejs.NodejsFunction(this, 'DeleteProductFunction', {
+      entry: 'lib/handlers/delete-product.ts',
+      handler: 'handler',
+      bundling: {
+        minify: true,
+        sourceMap: true,
+        target: 'ES2020',
+      }
+    });
 
     singleProductResource.addMethod('GET', new apigateway.LambdaIntegration(getProductByIdLambda));
     singleProductResource.addMethod('PUT', new apigateway.LambdaIntegration(updateProductLambda));
+    singleProductResource.addMethod('DELETE', new apigateway.LambdaIntegration(deleteProductLambda));
 
     // Add other resources and methods
 

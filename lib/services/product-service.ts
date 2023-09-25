@@ -36,6 +36,10 @@ export class ProductService {
         return this.repo.updateProductById(productId, productDetails);
     }
 
+    deleteProductById(productId: number): void {
+        this.repo.deleteProductById(productId);
+    }
+
     // Add more methods for other operations
 }
 
