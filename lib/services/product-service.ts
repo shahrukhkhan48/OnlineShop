@@ -19,5 +19,9 @@ export class ProductService {
     listProductsByCategory(categoryId: number): Product[] {
         return this.repo.getProductsByCategory(categoryId);
     }
+
+    getProductById(id: number): Product | undefined {
+        return this.repo.getProductById(id);
+    }
     // Add more methods for other operations
 }

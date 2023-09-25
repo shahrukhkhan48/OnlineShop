@@ -90,5 +90,10 @@ export class ProductRepository {
         return this.products.filter(product => product.Category.Id === categoryId);
     }
 
+    getProductById(id: number): Product | undefined {
+        return this.products.find(product => product.Id === id);
+    }
+
+
     // Add more methods for other operations
 }
