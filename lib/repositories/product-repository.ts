@@ -157,9 +157,5 @@ export class ProductRepository {
         this.products.splice(index, 1);
     }
 
-    getSupplierById(id: number): Supplier | undefined {
-        return this.suppliers.find(supplier => supplier.Id === id);
-    }
-
     // Add more methods for other operations
 }
