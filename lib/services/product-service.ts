@@ -20,8 +20,10 @@ export class ProductService {
         return this.repo.getProductsByCategory(categoryId);
     }
 
-    getProductById(id: number): Product | undefined {
-        return this.repo.getProductById(id);
+    getProductById(productId: number): Product | undefined {
+        return this.repo.getProductById(productId);
     }
+
     // Add more methods for other operations
 }
+
