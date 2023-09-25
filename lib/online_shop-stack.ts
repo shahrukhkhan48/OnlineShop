@@ -52,15 +52,7 @@ class OnlineShopStack extends Stack {
 
 
     // Products
-    const getProductByIdLambda = new lambdaNodejs.NodejsFunction(this, 'GetProductByIdFunction', {
-      entry: 'lib/handlers/get-product-by-id.ts',
-      handler: 'handler',
-      bundling: {
-        minify: true,
-        sourceMap: true,
-        target: 'ES2020',
-      }
-    });
+
 
     const fetchAllProductsLambda = new lambdaNodejs.NodejsFunction(this, 'FetchAllProductsFunction', {
       entry: 'lib/handlers/fetch-all-products.ts',
@@ -85,14 +77,33 @@ class OnlineShopStack extends Stack {
 
 
     const productResource = api.root.addResource('product');
+    const singleProductResource = productResource.addResource('{id}');
 
     productResource.addMethod('GET', new apigateway.LambdaIntegration(fetchAllProductsLambda));
-
     productResource.addMethod('POST', new apigateway.LambdaIntegration(addProductLambda));
 
+    const getProductByIdLambda = new lambdaNodejs.NodejsFunction(this, 'GetProductByIdFunction', {
+      entry: 'lib/handlers/get-product-by-id.ts',
+      handler: 'handler',
+      bundling: {
+        minify: true,
+        sourceMap: true,
+        target: 'ES2020',
+      }
+    });
 
-    const singleProductResource = productResource.addResource('{id}');
+    const updateProductLambda = new lambdaNodejs.NodejsFunction(this, 'UpdateProductFunction', {
+      entry: 'lib/handlers/update-product.ts',
+      handler: 'handler',
+      bundling: {
+        minify: true,
+        sourceMap: true,
+        target: 'ES2020',
+      }
+    });
+
     singleProductResource.addMethod('GET', new apigateway.LambdaIntegration(getProductByIdLambda));
+    singleProductResource.addMethod('PUT', new apigateway.LambdaIntegration(updateProductLambda));
 
     // Add other resources and methods
 

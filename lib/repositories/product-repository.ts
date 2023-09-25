@@ -140,6 +140,14 @@ export class ProductRepository {
         return product;
     }
 
+    updateProductById(productId: number, productDetails: Product): Product {
+        const index = this.products.findIndex(product => product.Id === productId);
+        if (index === -1) {
+            throw new Error("Product not found");
+        }
+        this.products[index] = {...this.products[index], ...productDetails};
+        return this.products[index];
+    }
 
     getSupplierById(id: number): Supplier | undefined {
         return this.suppliers.find(supplier => supplier.Id === id);

@@ -32,6 +32,9 @@ export class ProductService {
         return this.repo.addProduct(newProduct);
     }
 
+    updateProductById(productId: number, productDetails: Product): Product {
+        return this.repo.updateProductById(productId, productDetails);
+    }
 
     // Add more methods for other operations
 }
