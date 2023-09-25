@@ -115,6 +115,20 @@ export class ProductRepository {
         };
     }
 
+    fetchAllProducts(): Product[] {
+        return this.products.map(product => {
+            const productCategory = this.categories.find(category => category.Id === product.CategoryId);
+            const productSupplier = this.suppliers.find(supplier => supplier.Id === product.SupplierId);
+
+            return {
+                ...product,
+                Category: productCategory,
+                Supplier: productSupplier
+            };
+        });
+    }
+
+
     getSupplierById(id: number): Supplier | undefined {
         return this.suppliers.find(supplier => supplier.Id === id);
     }

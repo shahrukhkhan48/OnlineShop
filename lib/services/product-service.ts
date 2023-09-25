@@ -24,6 +24,11 @@ export class ProductService {
         return this.repo.getProductById(productId);
     }
 
+    fetchAllProducts(): Product[] {
+        return this.repo.fetchAllProducts();
+    }
+
+
     // Add more methods for other operations
 }
 
