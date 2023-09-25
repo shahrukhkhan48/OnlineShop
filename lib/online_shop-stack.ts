@@ -72,10 +72,23 @@ class OnlineShopStack extends Stack {
       }
     });
 
+    const addProductLambda = new lambdaNodejs.NodejsFunction(this, 'AddProductFunction', {
+      entry: 'lib/handlers/add-product.ts',
+      handler: 'handler',
+      bundling: {
+        minify: true,
+        sourceMap: true,
+        target: 'ES2020',
+      }
+    });
+
+
 
     const productResource = api.root.addResource('product');
 
     productResource.addMethod('GET', new apigateway.LambdaIntegration(fetchAllProductsLambda));
+
+    productResource.addMethod('POST', new apigateway.LambdaIntegration(addProductLambda));
 
 
     const singleProductResource = productResource.addResource('{id}');

@@ -128,6 +128,18 @@ export class ProductRepository {
         });
     }
 
+    addProduct(newProduct: Product): Product {
+        // Normally, this ID assignment would be handled by your database.
+        const newId = this.products.length + 1;
+        const product = {
+            ...newProduct,
+            Id: newId
+        };
+
+        this.products.push(product);
+        return product;
+    }
+
 
     getSupplierById(id: number): Supplier | undefined {
         return this.suppliers.find(supplier => supplier.Id === id);

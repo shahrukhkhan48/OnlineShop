@@ -28,6 +28,10 @@ export class ProductService {
         return this.repo.fetchAllProducts();
     }
 
+    addProduct(newProduct: Product): Product {
+        return this.repo.addProduct(newProduct);
+    }
+
 
     // Add more methods for other operations
 }
