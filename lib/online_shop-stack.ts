@@ -1,16 +1,29 @@
-import * as cdk from 'aws-cdk-lib';
+import * as lambdaNodejs from 'aws-cdk-lib/aws-lambda-nodejs';
+import * as apigateway from 'aws-cdk-lib/aws-apigateway';
 import { Construct } from 'constructs';
-// import * as sqs from 'aws-cdk-lib/aws-sqs';
+import { Stack, StackProps } from 'aws-cdk-lib';
 
-export class OnlineShopStack extends cdk.Stack {
-  constructor(scope: Construct, id: string, props?: cdk.StackProps) {
+class OnlineShopStack extends Stack {
+  constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
 
-    // The code that defines your stack goes here
+    const fetchAllCategoriesLambda = new lambdaNodejs.NodejsFunction(this, 'FetchAllCategoriesFunction', {
+      entry: 'lib/handlers/fetch-all-categories.ts',
+      handler: 'handler',
+      bundling: {
+        minify: true,
+        sourceMap: true,
+        target: 'ES2020',
+      }
+    });
 
-    // example resource
-    // const queue = new sqs.Queue(this, 'OnlineShopQueue', {
-    //   visibilityTimeout: cdk.Duration.seconds(300)
-    // });
+    const api = new apigateway.RestApi(this, 'ProductAPI');
+
+    const categoryResource = api.root.addResource('categories');
+    categoryResource.addMethod('GET', new apigateway.LambdaIntegration(fetchAllCategoriesLambda));
+
+    // Add other resources and methods
   }
 }
+
+export { OnlineShopStack };
