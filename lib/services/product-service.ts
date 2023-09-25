@@ -12,7 +12,7 @@ export class ProductService {
         return this.repo.fetchAllCategories();
     }
 
-    getCategoryById(id: number): ProductCategory | null {
+    getCategoryById(id: number): ProductCategory | undefined {
         return this.repo.getCategoryById(id);
     }
     // Add more methods for other operations

@@ -16,8 +16,8 @@ export class ProductRepository {
     }
 
     // Inside ProductRepository
-    getCategoryById(id: number): ProductCategory | null {
-        return this.categories.find(category => category.Id === id) || null;
+    getCategoryById(id: number): ProductCategory | undefined {
+        return this.categories.find(category => category.Id === id);
     }
 
 
