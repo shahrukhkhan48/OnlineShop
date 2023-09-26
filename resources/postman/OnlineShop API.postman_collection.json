@@ -1,0 +1,238 @@
+{
+	"info": {
+		"_postman_id": "96b38691-acc6-4da8-9f56-69ed0cfb4ec5",
+		"name": "OnlineShop API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "29863241"
+	},
+	"item": [
+		{
+			"name": "Fetch all categories",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{apiEndpoint}}/categories",
+					"host": [
+						"{{apiEndpoint}}"
+					],
+					"path": [
+						"categories"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Retrieve category by ID",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{apiEndpoint}}/categories/:categoryId",
+					"host": [
+						"{{apiEndpoint}}"
+					],
+					"path": [
+						"categories",
+						":categoryId"
+					],
+					"variable": [
+						{
+							"key": "categoryId"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "List products by category",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{apiEndpoint}}/categories/:categoryId/products",
+					"host": [
+						"{{apiEndpoint}}"
+					],
+					"path": [
+						"categories",
+						":categoryId",
+						"products"
+					],
+					"variable": [
+						{
+							"key": "categoryId"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "List all Products",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{apiEndpoint}}/product/",
+					"host": [
+						"{{apiEndpoint}}"
+					],
+					"path": [
+						"product",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Retrieve Product by ID",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{apiEndpoint}}/product/:productId",
+					"host": [
+						"{{apiEndpoint}}"
+					],
+					"path": [
+						"product",
+						":productId"
+					],
+					"variable": [
+						{
+							"key": "productId",
+							"value": ""
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Add a new product",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"Name\": \"Sample Laptop 2\",\n    \"Description\": \"A laptop with high-end specifications.\",\n    \"Price\": 1200,\n    \"Weight\": 1.5,\n    \"CategoryId\": 1,\n    \"SupplierId\": 2,\n    \"ImageUrl\": \"https://example.com/images/sample-laptop.jpg\"\n}\n"
+				},
+				"url": {
+					"raw": "{{apiEndpoint}}/product/",
+					"host": [
+						"{{apiEndpoint}}"
+					],
+					"path": [
+						"product",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update a product",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"Name\": \"<updated-product-name>\",\n    \"Description\": \"<updated-product-description>\",\n    \"Price\": 1300,\n    \"Weight\": 2.5,\n    \"CategoryId\": 1,\n    \"SupplierId\": 1,\n    \"ImageUrl\": \"<updated-product-image-url>\"\n}"
+				},
+				"url": {
+					"raw": "{{apiEndpoint}}/product/:productId",
+					"host": [
+						"{{apiEndpoint}}"
+					],
+					"path": [
+						"product",
+						":productId"
+					],
+					"variable": [
+						{
+							"key": "productId",
+							"value": "1"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete Product by ID",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"url": {
+					"raw": "{{apiEndpoint}}/product/:productId",
+					"host": [
+						"{{apiEndpoint}}"
+					],
+					"path": [
+						"product",
+						":productId"
+					],
+					"variable": [
+						{
+							"key": "productId",
+							"value": "1"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "apiEndpoint",
+			"value": "https://<url>.amazonaws.com/prod",
+			"type": "string"
+		}
+	]
+}
