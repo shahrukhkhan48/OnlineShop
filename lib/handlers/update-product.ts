@@ -8,7 +8,7 @@ exports.handler = async (event: any) => {
     if (productDetails.Id && productDetails.Id !== productId) {
         return {
             statusCode: 400,
-            body: 'Product Id in the request body should not be provided or should match the Id in the path.'
+            body: JSON.stringify({ message: 'Product Id in the request body should not be provided or should match the Id in the path.' })
         };
     }
 
