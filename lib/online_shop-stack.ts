@@ -74,10 +74,7 @@ class OnlineShopStack extends Stack {
       }
     });
 
-
-
     const productResource = api.root.addResource('product');
-    const singleProductResource = productResource.addResource('{id}');
 
     productResource.addMethod('GET', new apigateway.LambdaIntegration(fetchAllProductsLambda));
     productResource.addMethod('POST', new apigateway.LambdaIntegration(addProductLambda));
@@ -110,6 +107,8 @@ class OnlineShopStack extends Stack {
         target: 'ES2020',
       }
     });
+
+    const singleProductResource = productResource.addResource('{id}');
 
     singleProductResource.addMethod('GET', new apigateway.LambdaIntegration(getProductByIdLambda));
     singleProductResource.addMethod('PUT', new apigateway.LambdaIntegration(updateProductLambda));

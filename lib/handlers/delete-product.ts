@@ -11,9 +11,17 @@ exports.handler = async (event: any) => {
             body: `Product with ID: ${productId} deleted successfully.`
         };
     } catch (error) {
-        return {
-            statusCode: 500,
-            body: 'Internal Server Error'
-        };
+        if (error instanceof Error) {
+            return {
+                statusCode: 500,
+                body: JSON.stringify({ message: 'Internal Server Error', error: error.message })
+            };
+        } else {
+            return {
+                statusCode: 500,
+                // body: 'Internal Server Error'
+                body: JSON.stringify({ message: 'Internal Server Error', error: error })
+            };
+        }
     }
 };
