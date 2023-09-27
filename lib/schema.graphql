@@ -1,0 +1,56 @@
+type Product {
+    Id: ID!
+    Name: String!
+    Description: String
+    Price: Float!
+    Currency: String!
+    Weight: Int!
+    ImageUrl: String
+    Supplier: String
+    Category: ProductCategory!
+}
+
+type ProductCategory {
+    Id: ID!
+    Name: String!
+    Description: String
+    products: [Product]
+}
+
+type Query {
+    listCategories: [ProductCategory]
+    getCategory(id: ID!): ProductCategory
+    listProductsByCategory(categoryId: ID!): [Product]
+    getProduct(id: ID!): Product
+}
+
+input ProductInput {
+    Name: String!
+    Description: String
+    Price: Float!
+    Currency: String!
+    Weight: Int!
+    ImageUrl: String
+    Supplier: String
+    CategoryId: ID!
+}
+
+type Mutation {
+    addProduct(product: ProductInput!): Product
+    updateProduct(
+        Id: ID!
+        Name: String
+        Description: String
+        Price: Float
+        Currency: String
+        Weight: Int
+        ImageUrl: String
+        Supplier: String
+    ): Product
+    deleteProduct(Id: ID!): Boolean
+}
+
+schema {
+    query: Query
+    mutation: Mutation
+}

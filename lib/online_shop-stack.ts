@@ -1,16 +1,23 @@
-import * as cdk from 'aws-cdk-lib';
+import * as lambdaNodejs from 'aws-cdk-lib/aws-lambda-nodejs';
+import * as apigateway from 'aws-cdk-lib/aws-apigateway';
 import { Construct } from 'constructs';
-// import * as sqs from 'aws-cdk-lib/aws-sqs';
+import { Stack, StackProps } from 'aws-cdk-lib';
 
-export class OnlineShopStack extends cdk.Stack {
-  constructor(scope: Construct, id: string, props?: cdk.StackProps) {
+class OnlineShopStack extends Stack {
+  constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
 
-    // The code that defines your stack goes here
+    // Define a new Lambda function using Node.js and TypeScript
+    const getCategoryLambda = new lambdaNodejs.NodejsFunction(this, 'GetCategoryHandler', {
+      entry: 'lib/handlers/getCategory.ts',  // Path to our handler file
+      handler: 'handler',
+    });
 
-    // example resource
-    // const queue = new sqs.Queue(this, 'OnlineShopQueue', {
-    //   visibilityTimeout: cdk.Duration.seconds(300)
-    // });
+    // Create an API Gateway to expose the Lambda function
+    const api = new apigateway.LambdaRestApi(this, 'Endpoint', {
+      handler: getCategoryLambda,
+    });
   }
 }
+
+export default OnlineShopStack;
