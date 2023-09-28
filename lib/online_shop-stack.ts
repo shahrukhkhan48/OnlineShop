@@ -56,7 +56,7 @@ export class OnlineShopStack extends cdk.Stack {
     const updateProductDs = api.addLambdaDataSource('updateProductDs', updateProductLambda);
     const deleteProductDs = api.addLambdaDataSource('deleteProductDs', deleteProductLambda);
     const updateCategoryDs = api.addLambdaDataSource('updateCategoryDs', updateCategoryLambda);
-    const listCategories = api.addLambdaDataSource('getAllCategoriesDs', getAllCategoriesLambda);
+    const getAllCategoriesDs = api.addLambdaDataSource('getAllCategoriesDs', getAllCategoriesLambda);
 
     // Create resolvers to map GraphQL operations to Lambda functions
     getProductDs.createResolver({
@@ -95,7 +95,7 @@ export class OnlineShopStack extends cdk.Stack {
       typeName: 'Mutation',
       fieldName: 'updateCategory',
     });
-    listCategories.createResolver({
+    getAllCategoriesDs.createResolver({
       typeName: 'Query',
       fieldName: 'listCategories',
     });
