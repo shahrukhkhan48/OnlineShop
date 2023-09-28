@@ -1,66 +1,66 @@
 type Product {
-    id: ID!
-    name: String!
-    description: String
-    price: Float!
-    currency: String!
-    weight: Int!
-    imageUrl: String
-    supplier: String
-    categoryId: ID!
+    Id: ID!
+    Name: String!
+    Description: String
+    Price: Float!
+    Currency: String!
+    Weight: Int!
+    ImageUrl: String
+    Supplier: String
+    CategoryId: ID!
 }
 
 type ProductCategory {
-    id: ID!
-    name: String!
-    description: String
-    products: [Product]
+    Id: ID!
+    Name: String!
+    Description: String
+    Products: [Product]
 }
 
 type Query {
     listCategories: [ProductCategory]
-    getCategoryById(id: ID!): ProductCategory
-    listProductsByCategory(categoryId: ID!): [Product]
-    getProductById(id: ID!): Product
+    getCategoryById(Id: ID!): ProductCategory
+    listProductsByCategory(CategoryId: ID!): [Product]
+    getProductById(Id: ID!): Product
 }
 
 input ProductInput {
-    name: String!
-    description: String
-    price: Float!
-    currency: String!
-    weight: Int!
-    imageUrl: String
-    supplier: String
-    categoryId: ID!
+    Name: String!
+    Description: String
+    Price: Float!
+    Currency: String!
+    Weight: Int!
+    ImageUrl: String
+    Supplier: String
+    CategoryId: ID!
 }
 
 input CategoryInput {
-    name: String!
-    description: String
+    Name: String!
+    Description: String
 }
 
 type Mutation {
     addProduct(product: ProductInput!): Product
     addCategory(category: CategoryInput!): ProductCategory
     updateProduct(
-        id: ID!
-        name: String
-        description: String
-        price: Float
-        currency: String
-        weight: Int
-        imageUrl: String
-        supplier: String
-        categoryId: ID
+        Id: ID!
+        Name: String
+        Description: String
+        Price: Float
+        Currency: String
+        Weight: Int
+        ImageUrl: String
+        Supplier: String
+        CategoryId: ID
     ): Product
     updateCategory(
-        id: ID!
-        name: String
-        description: String
+        Id: ID!
+        Name: String
+        Description: String
     ): ProductCategory
-    deleteProduct(id: ID!): Boolean
-    deleteCategory(id: ID!): Boolean
+    deleteProduct(Id: ID!): Boolean
+    deleteCategory(Id: ID!): Boolean
 }
 
 schema {
