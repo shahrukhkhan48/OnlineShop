@@ -5,27 +5,27 @@ export class ProductService {
     constructor(private repo: ProductRepository) {}
 
     getAllProducts(): Product[] {
-        return this.repo.getAllProducts();
+        return this.repo.getAll();
     }
 
     getProductById(id: string): Product | null {
-        return this.repo.getProductById(id);
+        return this.repo.getById(id);
     }
 
     getProductsByCategoryId(categoryId: string): Product[] {
-        return this.repo.getProductByCategoryId(categoryId);
+        return this.repo.getByCategoryId(categoryId);
     }
 
     addProduct(product: Product): Product {
-        return this.repo.addProduct(product);
+        return this.repo.add(product);
     }
 
     updateProduct(id: string, updatedProductData: Product): Product | null {
-        return this.repo.updateProduct(id, updatedProductData);
+        return this.repo.update(id, updatedProductData);
     }
 
     deleteProduct(id: string): boolean {
-        return this.repo.deleteProduct(id);
+        return this.repo.delete(id);
     }
 
 

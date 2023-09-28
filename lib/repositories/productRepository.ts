@@ -6,24 +6,24 @@ export class ProductRepository {
     // Mock in-memory storage
     private products: Product[] = productsData;
 
-    getAllProducts(): Product[] {
+    getAll(): Product[] {
         return this.products;
     }
 
-    getProductById(id: string): Product | null {
+    getById(id: string): Product | null {
         return this.products.find(p => p.Id === id) || null;
     }
 
-    getProductByCategoryId(categoryId: string): Product[] {
+    getByCategoryId(categoryId: string): Product[] {
         return this.products.filter(p => p.Category === categoryId);
     }
 
-    addProduct(product: Product): Product {
+    add(product: Product): Product {
         this.products.push(product);
         return product;
     }
 
-    updateProduct(id: string, updatedProductData: Product): Product | null {
+    update(id: string, updatedProductData: Product): Product | null {
         const index = this.products.findIndex(p => p.Id === id);
 
         if (index === -1) return null;  // Product not found
@@ -34,7 +34,7 @@ export class ProductRepository {
         return this.products[index];
     }
 
-    deleteProduct(id: string): boolean {
+    delete(id: string): boolean {
         const initialLength = this.products.length;
         this.products = this.products.filter(p => p.Id !== id);
         return this.products.length < initialLength;  // Returns true if a product was removed
