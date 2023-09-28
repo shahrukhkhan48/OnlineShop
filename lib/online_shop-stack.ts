@@ -1,22 +1,40 @@
-import * as lambdaNodejs from 'aws-cdk-lib/aws-lambda-nodejs';
-import * as apigateway from 'aws-cdk-lib/aws-apigateway';
-import { Construct } from 'constructs';
-import { Stack, StackProps } from 'aws-cdk-lib';
+import * as cdk from 'aws-cdk-lib';
+import {NodejsFunction} from 'aws-cdk-lib/aws-lambda-nodejs';
+import * as lambda from 'aws-cdk-lib/aws-lambda';
 
-class OnlineShopStack extends Stack {
-  constructor(scope: Construct, id: string, props?: StackProps) {
+
+export class OnlineShopStack extends cdk.Stack {
+  constructor(scope: cdk.App, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
-    // Define a new Lambda function using Node.js and TypeScript
-    const getCategoryLambda = new lambdaNodejs.NodejsFunction(this, 'GetCategoryHandler', {
-      entry: 'lib/handlers/getCategory.ts',  // Path to our handler file
-      handler: 'handler',
+
+
+    const getProductLambda = new NodejsFunction(this, 'GetProductHandler', {
+      memorySize: 1024,
+      timeout: cdk.Duration.seconds(5),
+      runtime: lambda.Runtime.NODEJS_16_X,
+      handler: 'main',
+      entry: 'lib/handlers/getProduct.ts',
+      bundling: {
+        minify: true,
+        externalModules: ['aws-sdk'],
+      },
     });
 
-    // Create an API Gateway to expose the Lambda function
-    const api = new apigateway.LambdaRestApi(this, 'Endpoint', {
-      handler: getCategoryLambda,
+    // Define a new Lambda function using Node.js and TypeScript
+    const getCategoryLambda = new NodejsFunction(this, 'GetCategoryHandler', {
+      memorySize: 1024,
+      timeout: cdk.Duration.seconds(5),
+      runtime: lambda.Runtime.NODEJS_16_X,
+      handler: 'main',
+      entry: 'lib/handlers/getCategory.ts',  // Path to our handler file
+      bundling: {
+        minify: true,
+        sourceMap: true,
+        externalModules: ['aws-sdk'],
+      },
     });
+
   }
 }
 
