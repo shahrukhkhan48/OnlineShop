@@ -2,22 +2,27 @@ import { ProductService } from '../services/productService';
 import { ProductRepository } from '../repositories/productRepository';
 import { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from 'aws-lambda';
 
-export async function main(event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> {
+interface AppSyncEvent {
+    arguments: {
+        [key: string]: any;
+    };
+}
+
+export async function main(event: AppSyncEvent): Promise<Boolean> {
     const repo = new ProductRepository();
     const service = new ProductService(repo);
 
-    const id = event.pathParameters?.Id;
+    const id = event.arguments.Id;
     if (!id) {
-        return {
-            statusCode: 400,
-            body: JSON.stringify({ error: 'Product ID is required' }),
-        };
+        throw new Error('Product ID is required');
     }
 
-    const result = service.deleteProduct(id);
+    const success = service.deleteProduct(id);
 
-    return {
-        statusCode: 200,
-        body: JSON.stringify(result),
-    };
+    if (!success) {
+        throw new Error('Failed to delete product or product not found');
+    }
+
+    return success;
 }
+
