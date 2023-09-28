@@ -16,5 +16,18 @@ export class CategoryService {
         return this.repo.getById(id);
     }
 
+    addCategory(category: Category): Category {
+        return this.repo.add(category);
+    }
+
+    updateCategory(id: string, updatedCategoryData: Category): Category | null {
+        return this.repo.update(id, updatedCategoryData);
+    }
+
+    deleteCategory(id: string): boolean {
+        return this.repo.delete(id);
+    }
+
+
     // ... any other service methods you may need in the future
 }

@@ -7,6 +7,8 @@ export class OnlineShopStack extends cdk.Stack {
   constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
+    cdk.Tags.of(this).add('Owner', 'shahrukh.khan@trilogy.com');
+
     // Define AppSync API
     const api = new appsync.GraphqlApi(this, 'Api', {
       name: 'online-shop-api',

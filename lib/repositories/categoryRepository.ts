@@ -15,5 +15,25 @@ export class CategoryRepository {
         return this.categories.find(c => c.Id === id) || null;
     }
 
+    add(category: Category): Category {
+        this.categories.push(category);
+        return category;
+    }
+
+    update(id: string, updatedCategoryData: Category): Category | null {
+        const index = this.categories.findIndex(category => category.Id === id);
+        if (index === -1) return null;
+
+        // Overwrite the existing category data with the updated data
+        this.categories[index] = {...this.categories[index], ...updatedCategoryData};
+        return this.categories[index];
+    }
+
+    delete(id: string): boolean {
+        const initialLength = this.categories.length;
+        this.categories = this.categories.filter(category => category.Id !== id);
+        return this.categories.length < initialLength;
+    }
+
     // ... other CRUD operations if needed
 }
