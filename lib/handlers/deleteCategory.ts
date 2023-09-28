@@ -1,29 +1,25 @@
 import { CategoryService } from '../services/categoryService';
 import { CategoryRepository } from '../repositories/categoryRepository';
-import { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from 'aws-lambda';
 
-export async function main(event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> {
+interface AppSyncEvent {
+    arguments: {
+        Id: string;
+    };
+}
+
+export async function main(event: AppSyncEvent): Promise<boolean> {
     const repo = new CategoryRepository();
     const service = new CategoryService(repo);
 
-    const id = event.pathParameters?.Id;
+    const id = event.arguments.Id;
     if (!id) {
-        return {
-            statusCode: 400,
-            body: JSON.stringify({ error: 'Category ID is required' }),
-        };
+        throw new Error('Category ID is required');
     }
 
     const success = service.deleteCategory(id);
     if (!success) {
-        return {
-            statusCode: 404,
-            body: JSON.stringify({ error: 'Category not found' }),
-        };
+        throw new Error('Category not found');
     }
 
-    return {
-        statusCode: 200,
-        body: JSON.stringify({ message: 'Category deleted successfully' }),
-    };
+    return success;
 }
