@@ -32,7 +32,6 @@ export class OnlineShopStack extends cdk.Stack {
     const updateProductLambda = new lambdaNodejs.NodejsFunction(this, 'UpdateProductHandler', {...lambdaConfig, entry: 'lib/handlers/updateProduct.ts'});
     const deleteProductLambda = new lambdaNodejs.NodejsFunction(this, 'DeleteProductHandler', {...lambdaConfig, entry: 'lib/handlers/deleteProduct.ts'});
     const updateCategoryLambda = new lambdaNodejs.NodejsFunction(this, 'UpdateCategoryHandler', {...lambdaConfig, entry: 'lib/handlers/updateCategory.ts'});
-    const removeProductLambda = new lambdaNodejs.NodejsFunction(this, 'RemoveProductHandler', {...lambdaConfig, entry: 'lib/handlers/removeProduct.ts'});
 
 
     // Define AppSync API
@@ -57,8 +56,7 @@ export class OnlineShopStack extends cdk.Stack {
     const updateProductDs = api.addLambdaDataSource('updateProductDs', updateProductLambda);
     const deleteProductDs = api.addLambdaDataSource('deleteProductDs', deleteProductLambda);
     const updateCategoryDs = api.addLambdaDataSource('updateCategoryDs', updateCategoryLambda);
-    const getAllCategoriesDs = api.addLambdaDataSource('getAllCategoriesDs', getAllCategoriesLambda);
-    const removeProductDs = api.addLambdaDataSource('removeProductDs', removeProductLambda);
+    const listCategories = api.addLambdaDataSource('getAllCategoriesDs', getAllCategoriesLambda);
 
     // Create resolvers to map GraphQL operations to Lambda functions
     getProductDs.createResolver({
@@ -97,13 +95,9 @@ export class OnlineShopStack extends cdk.Stack {
       typeName: 'Mutation',
       fieldName: 'updateCategory',
     });
-    getAllCategoriesDs.createResolver({
+    listCategories.createResolver({
       typeName: 'Query',
-      fieldName: 'getAllCategories',
-    });
-    removeProductDs.createResolver({
-      typeName: 'Mutation',
-      fieldName: 'removeProduct',
+      fieldName: 'listCategories',
     });
 
     // Outputs

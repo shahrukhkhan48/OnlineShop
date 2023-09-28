@@ -7,7 +7,7 @@ type Product {
     weight: Int!
     imageUrl: String
     supplier: String
-    category: ProductCategory!
+    categoryId: ID!
 }
 
 type ProductCategory {
@@ -35,8 +35,14 @@ input ProductInput {
     categoryId: ID!
 }
 
+input CategoryInput {
+    name: String!
+    description: String
+}
+
 type Mutation {
     addProduct(product: ProductInput!): Product
+    addCategory(category: CategoryInput!): ProductCategory
     updateProduct(
         id: ID!
         name: String
@@ -46,8 +52,15 @@ type Mutation {
         weight: Int
         imageUrl: String
         supplier: String
+        categoryId: ID
     ): Product
+    updateCategory(
+        id: ID!
+        name: String
+        description: String
+    ): ProductCategory
     deleteProduct(id: ID!): Boolean
+    deleteCategory(id: ID!): Boolean
 }
 
 schema {
