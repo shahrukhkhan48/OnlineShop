@@ -1,16 +1,13 @@
 import { ProductService } from '../services/productService';
 import { ProductRepository } from '../repositories/productRepository';
-import { ProductSchema } from '../models/product';
 import { APIGatewayProxyEventV2 } from 'aws-lambda';
-import { Product } from "../models/product";
+import { Product } from '../models/product';
 
 export async function main(event: APIGatewayProxyEventV2): Promise<Product> {
-    console.log('event ', event);
-
     const repo = new ProductRepository();
     const service = new ProductService(repo);
 
-    const id = event.pathParameters?.id;
+    const id = event.pathParameters?.Id;
     if (!id) {
         throw new Error('Product ID is required');
     }

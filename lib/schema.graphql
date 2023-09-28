@@ -10,6 +10,7 @@ type Product {
     CategoryId: ID!
 }
 
+
 type ProductCategory {
     Id: ID!
     Name: String!
@@ -17,12 +18,14 @@ type ProductCategory {
     Products: [Product]
 }
 
+
 type Query {
     listCategories: [ProductCategory]
     getCategoryById(Id: ID!): ProductCategory
     listProductsByCategory(CategoryId: ID!): [Product]
     getProductById(Id: ID!): Product
 }
+
 
 input ProductInput {
     Name: String!

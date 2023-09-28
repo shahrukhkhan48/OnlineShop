@@ -7,7 +7,7 @@ export async function main(event: APIGatewayProxyEventV2): Promise<Category> {
     const repo = new CategoryRepository();
     const service = new CategoryService(repo);
 
-    const id = event.pathParameters?.id;
+    const id = event.pathParameters?.Id;
     if (!id) {
         throw new Error('Category ID is required');
     }

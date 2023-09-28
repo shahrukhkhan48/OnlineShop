@@ -6,7 +6,7 @@ export async function main(event: APIGatewayProxyEventV2): Promise<APIGatewayPro
     const repo = new CategoryRepository();
     const service = new CategoryService(repo);
 
-    const id = event.pathParameters?.id;
+    const id = event.pathParameters?.Id;
     if (!id) {
         return {
             statusCode: 400,
