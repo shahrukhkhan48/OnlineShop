@@ -1,17 +1,19 @@
 import { CategoryService } from '../services/categoryService';
 import { CategoryRepository } from '../repositories/categoryRepository';
-import { Category } from '../models/category';
-import { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from 'aws-lambda';
+import { Category } from "../models/category";
 
-export async function main(event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> {
+interface AppSyncEvent {
+    arguments: {
+        [key: string]: any;
+    };
+}
+
+export async function main(event: AppSyncEvent): Promise<Category> {
     const repo = new CategoryRepository();
     const service = new CategoryService(repo);
 
-    const categoryData: Category = JSON.parse(event.body || '{}');
+    const categoryData: Category =  event.arguments.category;
     const addedCategory = service.addCategory(categoryData);
 
-    return {
-        statusCode: 201,
-        body: JSON.stringify(addedCategory),
-    };
+    return addedCategory;
 }

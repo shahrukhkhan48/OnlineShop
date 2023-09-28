@@ -1,4 +1,6 @@
 import { Product } from '../models/product';
+import { generateUniqueId } from './utils';
+
 
 // Import JSON data
 const productsData: Product[] = require('../../data/products.json');
@@ -19,6 +21,14 @@ export class ProductRepository {
     }
 
     add(product: Product): Product {
+        // Ensure all required fields are set
+        if (!product.Id) {
+            product.Id = generateUniqueId(); // Assuming you have a method to generate unique IDs
+        }
+        if (!product.Name || !product.Price || !product.Currency || !product.Weight || !product.Category) {
+            throw new Error('Incomplete product data');
+        }
+
         this.products.push(product);
         return product;
     }

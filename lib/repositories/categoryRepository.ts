@@ -1,4 +1,5 @@
 import { Category } from '../models/category';
+import { generateUniqueId } from './utils';
 
 // Import JSON data
 const categoriesData: Category[] = require('../../data/categories.json');
@@ -6,6 +7,9 @@ const categoriesData: Category[] = require('../../data/categories.json');
 export class CategoryRepository {
     // Use the imported data instead of an empty array
     private categories: Category[] = categoriesData;
+
+    // Sample method to generate a unique ID
+
 
     getAll(): Category[] {
         return this.categories;
@@ -16,9 +20,20 @@ export class CategoryRepository {
     }
 
     add(category: Category): Category {
+        // Ensure the category has a unique Id
+        if (!category.Id) {
+            category.Id = generateUniqueId(); // Replace with your ID generation method
+        }
+
+        // Validate the category data
+        if (!category.Name) {
+            throw new Error('Category name is required');
+        }
+
         this.categories.push(category);
         return category;
     }
+
 
     update(id: string, updatedCategoryData: Category): Category | null {
         const index = this.categories.findIndex(category => category.Id === id);

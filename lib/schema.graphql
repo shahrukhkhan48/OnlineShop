@@ -35,7 +35,7 @@ input ProductInput {
     Weight: Int!
     ImageUrl: String
     Supplier: String
-    CategoryId: ID!
+    Category: ID!
 }
 
 input CategoryInput {
@@ -55,7 +55,7 @@ type Mutation {
         Weight: Int
         ImageUrl: String
         Supplier: String
-        CategoryId: ID
+        Category: ID
     ): Product
     updateCategory(
         Id: ID!
