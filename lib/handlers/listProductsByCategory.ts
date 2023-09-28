@@ -1,27 +1,23 @@
 import { ProductService } from '../services/productService';
 import { ProductRepository } from '../repositories/productRepository';
-import { ProductSchema } from '../models/product';
 import { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from 'aws-lambda';
 
 export async function main(event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> {
     const repo = new ProductRepository();
     const service = new ProductService(repo);
 
-    const productData = JSON.parse(event.body || '{}');
-
-    // Input validation using zod
-    const parsedData = ProductSchema.safeParse(productData);
-    if (!parsedData.success) {
+    const categoryId = event.pathParameters?.categoryId;
+    if (!categoryId) {
         return {
             statusCode: 400,
-            body: JSON.stringify({ error: 'Invalid product data' }),
+            body: JSON.stringify({ error: 'Category ID is required' }),
         };
     }
 
-    const newProduct = service.addProduct(parsedData.data);
+    const products = service.getProductsByCategoryId(categoryId);
 
     return {
-        statusCode: 201,
-        body: JSON.stringify(newProduct),
+        statusCode: 200,
+        body: JSON.stringify(products),
     };
 }

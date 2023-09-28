@@ -6,25 +6,10 @@ export async function main(event: APIGatewayProxyEventV2): Promise<APIGatewayPro
     const repo = new CategoryRepository();
     const service = new CategoryService(repo);
 
-    const id = event.pathParameters?.id;
-    if (!id) {
-        return {
-            statusCode: 400,
-            body: JSON.stringify({ error: 'Category ID is required' }),
-        };
-    }
-
-    const category = service.getCategoryById(id);
-
-    if (!category) {
-        return {
-            statusCode: 404,
-            body: JSON.stringify({ error: 'Category not found' }),
-        };
-    }
+    const categories = service.getAllCategories();
 
     return {
         statusCode: 200,
-        body: JSON.stringify(category),
+        body: JSON.stringify(categories),
     };
 }

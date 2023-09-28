@@ -1,53 +1,53 @@
 type Product {
-    Id: ID!
-    Name: String!
-    Description: String
-    Price: Float!
-    Currency: String!
-    Weight: Int!
-    ImageUrl: String
-    Supplier: String
-    Category: ProductCategory!
+    id: ID!
+    name: String!
+    description: String
+    price: Float!
+    currency: String!
+    weight: Int!
+    imageUrl: String
+    supplier: String
+    category: ProductCategory!
 }
 
 type ProductCategory {
-    Id: ID!
-    Name: String!
-    Description: String
+    id: ID!
+    name: String!
+    description: String
     products: [Product]
 }
 
 type Query {
     listCategories: [ProductCategory]
-    getCategory(id: ID!): ProductCategory
+    getCategoryById(id: ID!): ProductCategory
     listProductsByCategory(categoryId: ID!): [Product]
-    getProduct(id: ID!): Product
+    getProductById(id: ID!): Product
 }
 
 input ProductInput {
-    Name: String!
-    Description: String
-    Price: Float!
-    Currency: String!
-    Weight: Int!
-    ImageUrl: String
-    Supplier: String
-    CategoryId: ID!
+    name: String!
+    description: String
+    price: Float!
+    currency: String!
+    weight: Int!
+    imageUrl: String
+    supplier: String
+    categoryId: ID!
 }
 
 type Mutation {
     addProduct(product: ProductInput!): Product
     updateProduct(
-        Id: ID!
-        Name: String
-        Description: String
-        Price: Float
-        Currency: String
-        Weight: Int
-        ImageUrl: String
-        Supplier: String
+        id: ID!
+        name: String
+        description: String
+        price: Float
+        currency: String
+        weight: Int
+        imageUrl: String
+        supplier: String
     ): Product
-    deleteProduct(Id: ID!): Boolean
+    deleteProduct(id: ID!): Boolean
 }
 
 schema {
