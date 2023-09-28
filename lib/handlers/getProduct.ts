@@ -1,13 +1,18 @@
 import { ProductService } from '../services/productService';
 import { ProductRepository } from '../repositories/productRepository';
-import { APIGatewayProxyEventV2 } from 'aws-lambda';
 import { Product } from '../models/product';
 
-export async function main(event: APIGatewayProxyEventV2): Promise<Product> {
+interface AppSyncEvent {
+    arguments: {
+        [key: string]: any;
+    };
+}
+
+export async function main(event: AppSyncEvent): Promise<Product> {
     const repo = new ProductRepository();
     const service = new ProductService(repo);
 
-    const id = event.pathParameters?.Id;
+    const id = event.arguments?.Id;
     if (!id) {
         throw new Error('Product ID is required');
     }

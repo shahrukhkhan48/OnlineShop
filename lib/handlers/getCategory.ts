@@ -1,13 +1,18 @@
 import { CategoryService } from '../services/categoryService';
 import { CategoryRepository } from '../repositories/categoryRepository';
-import { APIGatewayProxyEventV2 } from 'aws-lambda';
 import { Category } from "../models/category";
 
-export async function main(event: APIGatewayProxyEventV2): Promise<Category> {
+interface AppSyncEvent {
+    arguments: {
+        [key: string]: any;
+    };
+}
+
+export async function main(event: AppSyncEvent): Promise<Category> {
     const repo = new CategoryRepository();
     const service = new CategoryService(repo);
 
-    const id = event.pathParameters?.Id;
+    const id = event.arguments?.Id;
     if (!id) {
         throw new Error('Category ID is required');
     }

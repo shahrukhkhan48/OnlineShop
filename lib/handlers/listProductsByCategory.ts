@@ -7,11 +7,11 @@ export async function main(event: APIGatewayProxyEventV2): Promise<Product[]> {
     const repo = new ProductRepository();
     const service = new ProductService(repo);
 
-    const CategoryId = event.pathParameters?.CategoryId;
-    if (!CategoryId) {
+    const Category = event.pathParameters?.Category;
+    if (!Category) {
         throw new Error('Category ID is required');
     }
 
-    const products = service.getProductsByCategoryId(CategoryId);
+    const products = service.getProductsByCategoryId(Category);
     return products;
 }

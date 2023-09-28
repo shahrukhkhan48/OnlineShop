@@ -7,7 +7,7 @@ type Product {
     Weight: Int!
     ImageUrl: String
     Supplier: String
-    CategoryId: ID!
+    Category: ID!
 }
 
 
@@ -22,7 +22,7 @@ type ProductCategory {
 type Query {
     listCategories: [ProductCategory]
     getCategoryById(Id: ID!): ProductCategory
-    listProductsByCategory(CategoryId: ID!): [Product]
+    listProductsByCategory(Category: ID!): [Product]
     getProductById(Id: ID!): Product
 }
 
