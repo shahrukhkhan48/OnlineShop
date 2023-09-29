@@ -109,7 +109,6 @@ export class OnlineShopStack extends cdk.Stack {
       fieldName: 'listCategories',
     });
 
-    // Outputs
     new cdk.CfnOutput(this, 'GraphQLAPIURL', {
       value: api.graphqlUrl,
       description: 'The URL for the AppSync API',
@@ -125,9 +124,6 @@ export class OnlineShopStack extends cdk.Stack {
       description: 'The region where the stack is deployed',
     });
 
-    const userPoolClient = new cognito.UserPoolClient(this, 'UserPoolClient', {
-      userPool,
-    });
 
     const adminGroup = new cognito.CfnUserPoolGroup(this, 'AdminGroup', {
       groupName: 'Admin',
@@ -135,26 +131,38 @@ export class OnlineShopStack extends cdk.Stack {
       description: 'Admin group with elevated privileges',
     });
 
-    const AdminUser = new cognito.CfnUserPoolUser(this, 'AdminUser', {
+    const customerGroup = new cognito.CfnUserPoolGroup(this, 'CustomerGroup', {
+      groupName: 'Customer',
       userPoolId: userPool.userPoolId,
-      username: 'shahrukh.khan',
+      description: 'Customer group with basic privileges',
+    });
+
+    const adminUser = new cognito.CfnUserPoolUser(this, 'AdminUser', {
+      userPoolId: userPool.userPoolId,
+      username: 'admin@test.com',
       userAttributes: [
-        { name: 'email', value: 'shahrukh.khan@trilogy.com' },
+        { name: 'email', value: 'admin@test.com' },
       ],
     });
 
-    new cognito.CfnUserPoolUserToGroupAttachment(this, 'UserGroupAttachment', <CfnUserPoolUserToGroupAttachmentProps>{
+    new cognito.CfnUserPoolUserToGroupAttachment(this, 'AdminUserGroupAttachment', <CfnUserPoolUserToGroupAttachmentProps> {
       userPoolId: userPool.userPoolId,
-      username: AdminUser.username,
+      username: adminUser.username,
       groupName: adminGroup.groupName,
-    }).addDependsOn(AdminUser);
+    });
 
-    const guestUser = new cognito.CfnUserPoolUser(this, 'GuestUser', {
+    const customerUser = new cognito.CfnUserPoolUser(this, 'CustomerUser',  {
       userPoolId: userPool.userPoolId,
-      username: 'guest',
+      username: 'customer@test.com',
       userAttributes: [
-        { name: 'email', value: 'guest@trilogy.com' },
+        { name: 'email', value: 'customer@test.com' },
       ],
+    });
+
+    new cognito.CfnUserPoolUserToGroupAttachment(this, 'CustomerUserGroupAttachment', <CfnUserPoolUserToGroupAttachmentProps>{
+      userPoolId: userPool.userPoolId,
+      username: customerUser.username,
+      groupName: customerGroup.groupName,
     });
 
   }
