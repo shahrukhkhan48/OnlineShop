@@ -11,7 +11,7 @@ export class OnlineShopStack extends cdk.Stack {
 
     cdk.Tags.of(this).add('Owner', 'shahrukh.khan@trilogy.com');
 
-    const userPool = new cognito.UserPool(this, 'MyUserPool', {
+    const userPool = new cognito.UserPool(this, 'OnlineShopUserPool', {
       // ... any other user pool configurations you need
     });
 
@@ -149,7 +149,7 @@ export class OnlineShopStack extends cdk.Stack {
       userPoolId: userPool.userPoolId,
       username: adminUser.username,
       groupName: adminGroup.groupName,
-    });
+    }).addDependsOn(adminUser);
 
     const customerUser = new cognito.CfnUserPoolUser(this, 'CustomerUser',  {
       userPoolId: userPool.userPoolId,
@@ -163,7 +163,42 @@ export class OnlineShopStack extends cdk.Stack {
       userPoolId: userPool.userPoolId,
       username: customerUser.username,
       groupName: customerGroup.groupName,
+    }).addDependsOn(customerUser);
+
+
+    const userPoolClient = userPool.addClient('AppClient', {
+      authFlows: {
+        userPassword: true,
+        userSrp: true,
+      },
+      oAuth: {
+        callbackUrls: ['https://www.getpostman.com/oauth2/callback'],
+        logoutUrls: ['https://www.getpostman.com/oauth2/callback'],
+        flows: {
+          authorizationCodeGrant: true,
+          implicitCodeGrant: true,
+        },
+        scopes: [cognito.OAuthScope.OPENID],
+      }
     });
+
+    new cdk.CfnOutput(this, 'UserPoolClientId', {
+      value: userPoolClient.userPoolClientId,
+      description: 'The Client ID for the User Pool App Client',
+    });
+
+    const userPoolDomain = new cognito.UserPoolDomain(this, 'UserPoolDomain', {
+      userPool: userPool,
+      cognitoDomain: {
+        domainPrefix: 'onlineshopapp',
+      }
+    });
+
+    new cdk.CfnOutput(this, 'UserPoolHostedUILoginUrl', {
+      value: `https://${userPoolDomain.domainName}/login?response_type=token&client_id=${userPoolClient.userPoolClientId}&redirect_uri=https://www.getpostman.com/oauth2/callback`,
+      description: 'The URL for the User Pool Hosted UI Login',
+    });
+
 
   }
 }
