@@ -195,9 +195,10 @@ export class OnlineShopStack extends cdk.Stack {
     });
 
     new cdk.CfnOutput(this, 'UserPoolHostedUILoginUrl', {
-      value: `https://${userPoolDomain.domainName}/login?response_type=token&client_id=${userPoolClient.userPoolClientId}&redirect_uri=https://www.getpostman.com/oauth2/callback`,
+      value: `https://${userPoolDomain.domainName}.auth.${this.region}.amazoncognito.com/login?response_type=token&client_id=${userPoolClient.userPoolClientId}&redirect_uri=https://www.getpostman.com/oauth2/callback`,
       description: 'The URL for the User Pool Hosted UI Login',
     });
+
 
 
   }
