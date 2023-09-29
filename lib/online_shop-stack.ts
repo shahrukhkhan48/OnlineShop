@@ -2,12 +2,17 @@ import * as cdk from '@aws-cdk/core';
 import * as appsync from '@aws-cdk/aws-appsync';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as lambdaNodejs from '@aws-cdk/aws-lambda-nodejs';
+import * as cognito from '@aws-cdk/aws-cognito';
 
 export class OnlineShopStack extends cdk.Stack {
   constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
     cdk.Tags.of(this).add('Owner', 'shahrukh.khan@trilogy.com');
+
+    const userPool = new cognito.UserPool(this, 'MyUserPool', {
+      // ... any other user pool configurations you need
+    });
 
     // Base Lambda configuration
     const lambdaConfig = {
@@ -33,18 +38,21 @@ export class OnlineShopStack extends cdk.Stack {
     const deleteProductLambda = new lambdaNodejs.NodejsFunction(this, 'DeleteProductHandler', {...lambdaConfig, entry: 'lib/handlers/deleteProduct.ts'});
     const updateCategoryLambda = new lambdaNodejs.NodejsFunction(this, 'UpdateCategoryHandler', {...lambdaConfig, entry: 'lib/handlers/updateCategory.ts'});
 
-
-    // Define AppSync API
+// Define AppSync API with USER_POOL authorization
     const api = new appsync.GraphqlApi(this, 'Api', {
       name: 'online-shop-api',
       schema: appsync.Schema.fromAsset('lib/schema.graphql'),
       authorizationConfig: {
         defaultAuthorization: {
-          authorizationType: appsync.AuthorizationType.API_KEY,
+          authorizationType: appsync.AuthorizationType.USER_POOL,
+          userPoolConfig: {
+            userPool: userPool, // Replace with your Cognito User Pool
+          },
         },
       },
       xrayEnabled: true,
     });
+
 
     // Connect Lambda functions to AppSync as data sources
     const getProductDs = api.addLambdaDataSource('getProductDs', getProductLambda);

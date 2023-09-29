@@ -1,3 +1,7 @@
+directive @aws_cognito_user_pools(
+    cognito_groups: [String!]
+) on FIELD_DEFINITION | OBJECT
+
 type Product {
     Id: ID!
     Name: String!
@@ -10,7 +14,6 @@ type Product {
     Category: ID!
 }
 
-
 type ProductCategory {
     Id: ID!
     Name: String!
@@ -18,14 +21,12 @@ type ProductCategory {
     Products: [Product]
 }
 
-
 type Query {
     listCategories: [ProductCategory]
     getCategoryById(Id: ID!): ProductCategory
     listProductsByCategory(Category: ID!): [Product]
     getProductById(Id: ID!): Product
 }
-
 
 input ProductInput {
     Name: String!
@@ -44,8 +45,8 @@ input CategoryInput {
 }
 
 type Mutation {
-    addProduct(product: ProductInput!): Product
-    addCategory(category: CategoryInput!): ProductCategory
+    addProduct(product: ProductInput!): Product @aws_cognito_user_pools(cognito_groups: ["Admin"])
+    addCategory(category: CategoryInput!): ProductCategory @aws_cognito_user_pools(cognito_groups: ["Admin"])
     updateProduct(
         Id: ID!
         Name: String
@@ -56,14 +57,14 @@ type Mutation {
         ImageUrl: String
         Supplier: String
         Category: ID
-    ): Product
+    ): Product @aws_cognito_user_pools(cognito_groups: ["Admin"])
     updateCategory(
         Id: ID!
         Name: String
         Description: String
-    ): ProductCategory
-    deleteProduct(Id: ID!): Boolean
-    deleteCategory(Id: ID!): Boolean
+    ): ProductCategory @aws_cognito_user_pools(cognito_groups: ["Admin"])
+    deleteProduct(Id: ID!): Boolean @aws_cognito_user_pools(cognito_groups: ["Admin"])
+    deleteCategory(Id: ID!): Boolean @aws_cognito_user_pools(cognito_groups: ["Admin"])
 }
 
 schema {
