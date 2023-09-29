@@ -139,9 +139,9 @@ export class OnlineShopStack extends cdk.Stack {
 
     const adminUser = new cognito.CfnUserPoolUser(this, 'AdminUser', {
       userPoolId: userPool.userPoolId,
-      username: 'admin@test.com',
+      username: 'shahrukh.khan@trilogy.com',
       userAttributes: [
-        { name: 'email', value: 'admin@test.com' },
+        { name: 'email', value: 'shahrukh.khan@trilogy.com' },
       ],
     });
 
@@ -153,9 +153,9 @@ export class OnlineShopStack extends cdk.Stack {
 
     const customerUser = new cognito.CfnUserPoolUser(this, 'CustomerUser',  {
       userPoolId: userPool.userPoolId,
-      username: 'customer@test.com',
+      username: 'customer@trilogy.com',
       userAttributes: [
-        { name: 'email', value: 'customer@test.com' },
+        { name: 'email', value: 'customer@trilogy.com' },
       ],
     });
 
@@ -198,6 +198,7 @@ export class OnlineShopStack extends cdk.Stack {
       value: `https://${userPoolDomain.domainName}.auth.${this.region}.amazoncognito.com/login?response_type=token&client_id=${userPoolClient.userPoolClientId}&redirect_uri=https://www.getpostman.com/oauth2/callback`,
       description: 'The URL for the User Pool Hosted UI Login',
     });
+
 
 
 

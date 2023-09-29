@@ -28,6 +28,7 @@
     "@aws-cdk/core": "^1.204.0",
     "aws-cdk-lib": "^2.99.0",
     "aws-lambda": "^1.0.7",
+    "aws-sdk": "^2.1467.0",
     "constructs": "^10.2.70",
     "esbuild": "^0.19.4",
     "source-map-support": "^0.5.21",
