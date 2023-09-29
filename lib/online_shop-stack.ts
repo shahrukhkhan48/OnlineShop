@@ -3,6 +3,7 @@ import * as appsync from '@aws-cdk/aws-appsync';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as lambdaNodejs from '@aws-cdk/aws-lambda-nodejs';
 import * as cognito from '@aws-cdk/aws-cognito';
+import {CfnUserPoolUserToGroupAttachmentProps} from "@aws-cdk/aws-cognito";
 
 export class OnlineShopStack extends cdk.Stack {
   constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
@@ -122,6 +123,38 @@ export class OnlineShopStack extends cdk.Stack {
     new cdk.CfnOutput(this, 'StackRegion', {
       value: this.region,
       description: 'The region where the stack is deployed',
+    });
+
+    const userPoolClient = new cognito.UserPoolClient(this, 'UserPoolClient', {
+      userPool,
+    });
+
+    const adminGroup = new cognito.CfnUserPoolGroup(this, 'AdminGroup', {
+      groupName: 'Admin',
+      userPoolId: userPool.userPoolId,
+      description: 'Admin group with elevated privileges',
+    });
+
+    const AdminUser = new cognito.CfnUserPoolUser(this, 'AdminUser', {
+      userPoolId: userPool.userPoolId,
+      username: 'shahrukh.khan',
+      userAttributes: [
+        { name: 'email', value: 'shahrukh.khan@trilogy.com' },
+      ],
+    });
+
+    new cognito.CfnUserPoolUserToGroupAttachment(this, 'UserGroupAttachment', <CfnUserPoolUserToGroupAttachmentProps>{
+      userPoolId: userPool.userPoolId,
+      username: AdminUser.username,
+      groupName: adminGroup.groupName,
+    }).addDependsOn(AdminUser);
+
+    const guestUser = new cognito.CfnUserPoolUser(this, 'GuestUser', {
+      userPoolId: userPool.userPoolId,
+      username: 'guest',
+      userAttributes: [
+        { name: 'email', value: 'guest@trilogy.com' },
+      ],
     });
 
   }
