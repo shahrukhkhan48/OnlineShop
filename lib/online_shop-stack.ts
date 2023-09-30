@@ -144,11 +144,6 @@ export class OnlineShopStack extends cdk.Stack {
       description: 'The URL for the AppSync API',
     });
 
-    new cdk.CfnOutput(this, 'GraphQLAPIKey', {
-      value: api.apiKey || '',
-      description: 'The API key for the AppSync API',
-    });
-
     new cdk.CfnOutput(this, 'StackRegion', {
       value: this.region,
       description: 'The region where the stack is deployed',
@@ -230,7 +225,10 @@ export class OnlineShopStack extends cdk.Stack {
     });
 
 
-
+    new cdk.CfnOutput(this, 'TableName', {
+      value: onlineShopTable.tableName,
+      description: 'DynamoDB Table Name',
+    });
 
   }
 }

@@ -1,12 +1,12 @@
 import { Category } from '../models/category';
 import { Table } from 'dynamodb-onetable';
 import * as AWS from 'aws-sdk';
-import {generateUniqueId} from "./utils";
+import { generateUniqueId } from "./utils";
 
 const client = new AWS.DynamoDB.DocumentClient();
 const CategoriesTable = new Table({
     client,
-    name: process.env.TABLE_NAME,
+    name: process.env.TABLE_NAME!,
     schema: {
         version: '0.1',
         indexes: {
@@ -28,12 +28,12 @@ const CategoriesTable = new Table({
 export class CategoryRepository {
 
     async getAll(): Promise<Category[]> {
-        const results = await CategoriesTable.scan('Category');  // Just use the string directly
+        const results = await CategoriesTable.scan('Category');
         return results as Category[];
     }
 
     async getById(id: string): Promise<Category | null> {
-        const category = await CategoriesTable.get('Product', { pk: 'CATEGORIES', sk: `CATEGORY#${id}` });
+        const category = await CategoriesTable.get('Category', { id });
         return category as Category || null;
     }
 
@@ -41,12 +41,12 @@ export class CategoryRepository {
         if (!category.Id) category.Id = generateUniqueId();
         if (!category.Name) throw new Error('Category name is required');
 
-        await CategoriesTable.create( 'Category', category );
+        await CategoriesTable.create('Category', category);
         return category;
     }
 
     async update(id: string, updatedCategoryData: Category): Promise<Category | null> {
-        const updatedCategory = await CategoriesTable.update( 'Category', {
+        const updatedCategory = await CategoriesTable.update('Category', {
             id,
             ...updatedCategoryData,
         }) as Category;
@@ -58,10 +58,8 @@ export class CategoryRepository {
         return updatedCategory;
     }
 
-
     async delete(id: string): Promise<boolean> {
-        (CategoriesTable as any).delete({ type: 'Category', id });
-        return true;  // Assuming delete is successful
+        await CategoriesTable.remove('Category', { id });
+        return true;
     }
-
 }
