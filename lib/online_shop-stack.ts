@@ -4,6 +4,7 @@ import * as lambda from '@aws-cdk/aws-lambda';
 import * as lambdaNodejs from '@aws-cdk/aws-lambda-nodejs';
 import * as cognito from '@aws-cdk/aws-cognito';
 import {CfnUserPoolUserToGroupAttachmentProps} from "@aws-cdk/aws-cognito";
+import * as dynamodb from '@aws-cdk/aws-dynamodb';
 
 export class OnlineShopStack extends cdk.Stack {
   constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
@@ -15,6 +16,32 @@ export class OnlineShopStack extends cdk.Stack {
       // ... any other user pool configurations you need
     });
 
+    // DynamoDB table setup for products and categories
+    const onlineShopTable = new dynamodb.Table(this, 'OnlineShopTable', {
+      partitionKey: {
+        name: 'PK',
+        type: dynamodb.AttributeType.STRING,
+      },
+      sortKey: {
+        name: 'SK',
+        type: dynamodb.AttributeType.STRING,
+      },
+      billingMode: dynamodb.BillingMode.PAY_PER_REQUEST, // Using on-demand billing mode
+    });
+
+// Add Global Secondary Index to support reading products by category
+    onlineShopTable.addGlobalSecondaryIndex({
+      indexName: 'GSI1',
+      partitionKey: {
+        name: 'GSI1PK',
+        type: dynamodb.AttributeType.STRING,
+      },
+      sortKey: {
+        name: 'GSI1SK',
+        type: dynamodb.AttributeType.STRING,
+      },
+    });
+
     // Base Lambda configuration
     const lambdaConfig = {
       memorySize: 1024,
@@ -24,6 +51,9 @@ export class OnlineShopStack extends cdk.Stack {
       bundling: {
         minify: true,
         externalModules: ['aws-sdk'],
+      },
+      environment: {
+        TABLE_NAME: onlineShopTable.tableName,
       },
     };
 
