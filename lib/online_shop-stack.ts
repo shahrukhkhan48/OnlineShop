@@ -230,5 +230,17 @@ export class OnlineShopStack extends cdk.Stack {
       description: 'DynamoDB Table Name',
     });
 
+    // Granting Lambda functions permissions to interact with the DynamoDB table
+    onlineShopTable.grantReadWriteData(getProductLambda);
+    onlineShopTable.grantReadWriteData(getCategoryLambda);
+    onlineShopTable.grantReadWriteData(addCategoryLambda);
+    onlineShopTable.grantReadWriteData(deleteCategoryLambda);
+    onlineShopTable.grantReadWriteData(getAllCategoriesLambda);
+    onlineShopTable.grantReadWriteData(listProductsByCategoryLambda);
+    onlineShopTable.grantReadWriteData(addProductLambda);
+    onlineShopTable.grantReadWriteData(updateProductLambda);
+    onlineShopTable.grantReadWriteData(deleteProductLambda);
+    onlineShopTable.grantReadWriteData(updateCategoryLambda);
+
   }
 }
