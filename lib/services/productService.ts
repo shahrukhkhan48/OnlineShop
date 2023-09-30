@@ -4,30 +4,27 @@ import { ProductRepository } from '../repositories/productRepository';
 export class ProductService {
     constructor(private repo: ProductRepository) {}
 
-    getAllProducts(): Product[] {
-        return this.repo.getAll();
+    async getAllProducts(): Promise<Product[]> {
+        return await this.repo.getAll();
     }
 
-    getProductById(id: string): Product | null {
-        return this.repo.getById(id);
+    async getProductById(id: string): Promise<Product | null> {
+        return await this.repo.getById(id);
     }
 
-    getProductsByCategoryId(categoryId: string): Product[] {
-        return this.repo.getByCategoryId(categoryId);
+    async getProductsByCategoryId(categoryId: string): Promise<Product[]> {
+        return await this.repo.getByCategoryId(categoryId);
     }
 
-    addProduct(product: Product): Product {
-        return this.repo.add(product);
+    async addProduct(product: Product): Promise<Product> {
+        return await this.repo.add(product);
     }
 
-    updateProduct(id: string, updatedProductData: Product): Product | null {
-        return this.repo.update(id, updatedProductData);
+    async updateProduct(id: string, updatedProductData: Product): Promise<Product | null> {
+        return await this.repo.update(id, updatedProductData);
     }
 
-    deleteProduct(id: string): boolean {
-        return this.repo.delete(id);
+    async deleteProduct(id: string): Promise<boolean> {
+        return await this.repo.delete(id);
     }
-
-
-    // ... other operations
 }

@@ -17,7 +17,7 @@ export async function main(event: AppSyncEvent): Promise<Product> {
         throw new Error('Product ID is required');
     }
 
-    const product = service.getProductById(id);
+    const product = await service.getProductById(id);  // Note the 'await' here
 
     if (!product) {
         throw new Error('Product not found');
@@ -25,3 +25,4 @@ export async function main(event: AppSyncEvent): Promise<Product> {
 
     return product;
 }
+
