@@ -1,54 +1,67 @@
 import { Category } from '../models/category';
-import { generateUniqueId } from './utils';
+import { Table } from 'dynamodb-onetable';
+import * as AWS from 'aws-sdk';
+import {generateUniqueId} from "./utils";
 
-// Import JSON data
-const categoriesData: Category[] = require('../../data/categories.json');
+const client = new AWS.DynamoDB.DocumentClient();
+const CategoriesTable = new Table({
+    client,
+    name: process.env.TABLE_NAME,
+    schema: {
+        version: '0.1',
+        indexes: {
+            primary: { hash: 'pk', sort: 'sk' },
+            GSI1: { hash: 'GSI1PK', sort: 'GSI1SK' }
+        },
+        models: {
+            Category: {
+                pk: { type: 'string', value: 'CATEGORIES' },
+                sk: { type: 'string', value: 'CATEGORY#${id}' },
+                id: { type: 'string' },
+                Name: { type: 'string' },
+                Description: { type: 'string', required: false }
+            }
+        },
+    },
+});
 
 export class CategoryRepository {
-    // Use the imported data instead of an empty array
-    private categories: Category[] = categoriesData;
 
-    // Sample method to generate a unique ID
-
-
-    getAll(): Category[] {
-        return this.categories;
+    async getAll(): Promise<Category[]> {
+        const results = await CategoriesTable.scan('Category');  // Just use the string directly
+        return results as Category[];
     }
 
-    getById(id: string): Category | null {
-        return this.categories.find(c => c.Id === id) || null;
+    async getById(id: string): Promise<Category | null> {
+        const category = await CategoriesTable.get('Product', { pk: 'CATEGORIES', sk: `CATEGORY#${id}` });
+        return category as Category || null;
     }
 
-    add(category: Category): Category {
-        // Ensure the category has a unique Id
-        if (!category.Id) {
-            category.Id = generateUniqueId(); // Replace with your ID generation method
-        }
+    async add(category: Category): Promise<Category> {
+        if (!category.Id) category.Id = generateUniqueId();
+        if (!category.Name) throw new Error('Category name is required');
 
-        // Validate the category data
-        if (!category.Name) {
-            throw new Error('Category name is required');
-        }
-
-        this.categories.push(category);
+        await CategoriesTable.create( 'Category', category );
         return category;
     }
 
+    async update(id: string, updatedCategoryData: Category): Promise<Category | null> {
+        const updatedCategory = await CategoriesTable.update( 'Category', {
+            id,
+            ...updatedCategoryData,
+        }) as Category;
 
-    update(id: string, updatedCategoryData: Category): Category | null {
-        const index = this.categories.findIndex(category => category.Id === id);
-        if (index === -1) return null;
+        if (!updatedCategory) {
+            return null;
+        }
 
-        // Overwrite the existing category data with the updated data
-        this.categories[index] = {...this.categories[index], ...updatedCategoryData};
-        return this.categories[index];
+        return updatedCategory;
     }
 
-    delete(id: string): boolean {
-        const initialLength = this.categories.length;
-        this.categories = this.categories.filter(category => category.Id !== id);
-        return this.categories.length < initialLength;
+
+    async delete(id: string): Promise<boolean> {
+        (CategoriesTable as any).delete({ type: 'Category', id });
+        return true;  // Assuming delete is successful
     }
 
-    // ... other CRUD operations if needed
 }
