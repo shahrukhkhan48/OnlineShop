@@ -17,7 +17,7 @@ export async function main(event: AppSyncEvent): Promise<Category> {
         throw new Error('Category ID is required');
     }
 
-    const category = service.getCategoryById(id);
+    const category = await service.getCategoryById(id);
 
     if (!category) {
         throw new Error('Category not found');
