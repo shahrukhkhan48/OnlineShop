@@ -1,5 +1,6 @@
 import { DynamoDB } from 'aws-sdk';
 import { Order } from '../models/order';
+import {generateUniqueId} from "./utils";
 
 const dynamoDB = new DynamoDB.DocumentClient();
 
@@ -10,24 +11,20 @@ if (!TABLE_NAME) {
 }
 
 export class OrderRepository {
-    generateUniqueId(): string {
-        // Implement the UUID generator or another unique ID method here.
-        // For this example, I'm returning a placeholder. You should replace this with your UUID logic.
-        return `unique-id-${Date.now()}`;
-    }
 
     async placeOrder(customerEmail: string, ShippingAddress: string, OrderDetails: any[]): Promise<Order> {
         const orderDate = new Date().toISOString();
-        const orderId = this.generateUniqueId();
+        const orderId = generateUniqueId();
 
         const order: Order = {
+            PK: `ORDER#${orderId}`,
+            SK: orderDate,
             Id: orderId,
             CustomerEmail: customerEmail,
             ShippingAddress: ShippingAddress,
             OrderDetails: OrderDetails,
             OrderDate: orderDate
         };
-
 
         const params = {
             TableName: TABLE_NAME,
@@ -38,4 +35,5 @@ export class OrderRepository {
 
         return order;
     }
+
 }
