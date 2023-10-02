@@ -68,6 +68,7 @@ export class OnlineShopStack extends cdk.Stack {
     const updateProductLambda = new lambdaNodejs.NodejsFunction(this, 'UpdateProductHandler', {...lambdaConfig, entry: 'lib/handlers/updateProduct.ts'});
     const deleteProductLambda = new lambdaNodejs.NodejsFunction(this, 'DeleteProductHandler', {...lambdaConfig, entry: 'lib/handlers/deleteProduct.ts'});
     const updateCategoryLambda = new lambdaNodejs.NodejsFunction(this, 'UpdateCategoryHandler', {...lambdaConfig, entry: 'lib/handlers/updateCategory.ts'});
+    const placeOrderLambda = new lambdaNodejs.NodejsFunction(this, 'PlaceOrderHandler', {...lambdaConfig, entry: 'lib/handlers/placeOrder.ts'});
 
 // Define AppSync API with USER_POOL authorization
     const api = new appsync.GraphqlApi(this, 'Api', {
@@ -96,6 +97,7 @@ export class OnlineShopStack extends cdk.Stack {
     const deleteProductDs = api.addLambdaDataSource('deleteProductDs', deleteProductLambda);
     const updateCategoryDs = api.addLambdaDataSource('updateCategoryDs', updateCategoryLambda);
     const getAllCategoriesDs = api.addLambdaDataSource('getAllCategoriesDs', getAllCategoriesLambda);
+    const placeOrderDs = api.addLambdaDataSource('PlaceOrderDs', placeOrderLambda);
 
     // Create resolvers to map GraphQL operations to Lambda functions
     getProductDs.createResolver({
@@ -138,6 +140,11 @@ export class OnlineShopStack extends cdk.Stack {
       typeName: 'Query',
       fieldName: 'listCategories',
     });
+    placeOrderDs.createResolver({
+      typeName: "Mutation",
+      fieldName: "placeOrder",
+    });
+
 
     new cdk.CfnOutput(this, 'GraphQLAPIURL', {
       value: api.graphqlUrl,
@@ -241,6 +248,7 @@ export class OnlineShopStack extends cdk.Stack {
     onlineShopTable.grantReadWriteData(updateProductLambda);
     onlineShopTable.grantReadWriteData(deleteProductLambda);
     onlineShopTable.grantReadWriteData(updateCategoryLambda);
+    onlineShopTable.grantReadWriteData(placeOrderLambda);
 
   }
 }

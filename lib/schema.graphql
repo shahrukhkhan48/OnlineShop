@@ -67,6 +67,34 @@ type Mutation {
     deleteCategory(Id: ID!): Boolean @aws_cognito_user_pools(cognito_groups: ["Admin"])
 }
 
+type Order {
+    Id: ID!
+    CustomerEmail: String!
+    ShippingAddress: String!
+    OrderDetails: [OrderDetail]!
+    OrderDate: String!
+}
+
+type OrderDetail {
+    ProductId: ID!
+    Quantity: Int!
+}
+
+input OrderInput {
+    ShippingAddress: String!
+    OrderDetails: [OrderDetailInput]!
+}
+
+input OrderDetailInput {
+    ProductId: ID!
+    Quantity: Int!
+}
+
+type Mutation {
+    placeOrder(order: OrderInput!): Order @aws_cognito_user_pools(cognito_groups: ["User"])
+}
+
+
 schema {
     query: Query
     mutation: Mutation
