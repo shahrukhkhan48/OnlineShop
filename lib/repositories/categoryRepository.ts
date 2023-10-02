@@ -1,65 +1,110 @@
+import { DynamoDB } from 'aws-sdk';
 import { Category } from '../models/category';
-import { Table } from 'dynamodb-onetable';
-import * as AWS from 'aws-sdk';
 import { generateUniqueId } from "./utils";
 
-const client = new AWS.DynamoDB.DocumentClient();
-const CategoriesTable = new Table({
-    client,
-    name: process.env.TABLE_NAME!,
-    schema: {
-        version: '0.1',
-        indexes: {
-            primary: { hash: 'pk', sort: 'sk' },
-            GSI1: { hash: 'GSI1PK', sort: 'GSI1SK' }
-        },
-        models: {
-            Category: {
-                pk: { type: 'string', value: 'CATEGORIES' },
-                sk: { type: 'string', value: 'CATEGORY#${id}' },
-                id: { type: 'string' },
-                Name: { type: 'string' },
-                Description: { type: 'string', required: false }
-            }
-        },
-    },
-});
+const dynamoDB = new DynamoDB.DocumentClient();
+
+// Asserting that TABLE_NAME is a string. If it's undefined, throw an error.
+const TABLE_NAME = process.env.TABLE_NAME as string;
+if (!TABLE_NAME) {
+    throw new Error('Environment variable TABLE_NAME is not set');
+}
 
 export class CategoryRepository {
 
     async getAll(): Promise<Category[]> {
-        const results = await CategoriesTable.scan('Category');
-        return results as Category[];
+        const params = {
+            TableName: TABLE_NAME,
+            FilterExpression: "PK = :categoryPrefix",
+            ExpressionAttributeValues: {
+                ":categoryPrefix": "CATEGORIES"
+            }
+        };
+        const results = await dynamoDB.scan(params).promise();
+        return results.Items as Category[];
     }
 
     async getById(id: string): Promise<Category | null> {
-        const category = await CategoriesTable.get('Category', { id });
-        return category as Category || null;
+        const params = {
+            TableName: TABLE_NAME,
+            Key: {
+                PK: "CATEGORIES",
+                SK: `CATEGORY#${id}`
+            }
+        };
+        const result = await dynamoDB.get(params).promise();
+        return result.Item as Category | null;
     }
 
     async add(category: Category): Promise<Category> {
         if (!category.Id) category.Id = generateUniqueId();
-        if (!category.Name) throw new Error('Category name is required');
 
-        await CategoriesTable.create('Category', category);
-        return category;
+        const newCategory: Category = {
+            ...category,
+            PK: "CATEGORIES",
+            SK: `CATEGORY#${category.Id}`
+        };
+
+        const params = {
+            TableName: TABLE_NAME,
+            Item: newCategory
+        };
+
+        await dynamoDB.put(params).promise();
+
+        return newCategory;
     }
 
     async update(id: string, updatedCategoryData: Category): Promise<Category | null> {
-        const updatedCategory = await CategoriesTable.update('Category', {
-            id,
-            ...updatedCategoryData,
-        }) as Category;
+        const updateExpressions: string[] = [];
+        const expressionAttributeNames: { [key: string]: string } = {};
+        const expressionAttributeValues: { [key: string]: any } = {};
 
-        if (!updatedCategory) {
-            return null;
+        // Loop over category data and build update expressions
+        for (let key in updatedCategoryData) {
+            if (key !== 'Id' && key !== 'PK' && key !== 'SK' && updatedCategoryData[key as keyof Category] !== undefined) {
+                updateExpressions.push(`#${key} = :${key}`);
+                expressionAttributeNames[`#${key}`] = key;
+                expressionAttributeValues[`:${key}`] = updatedCategoryData[key as keyof Category];
+            }
         }
 
-        return updatedCategory;
+        // Check if there's anything to update
+        if (updateExpressions.length === 0) {
+            throw new Error('No valid fields provided for update');
+        }
+
+        const params = {
+            TableName: TABLE_NAME,
+            Key: {
+                PK: "CATEGORIES",
+                SK: `CATEGORY#${id}`
+            },
+            UpdateExpression: `SET ${updateExpressions.join(', ')}`,
+            ExpressionAttributeNames: expressionAttributeNames,
+            ExpressionAttributeValues: expressionAttributeValues,
+            ReturnValues: "ALL_NEW"
+        };
+
+        const result = await dynamoDB.update(params).promise();
+
+        if (result.Attributes) {
+            const updatedCategory = await this.getById(id);  // Use the getById method to fetch the full category
+            return updatedCategory;
+        } else {
+            return null;
+        }
     }
 
     async delete(id: string): Promise<boolean> {
-        await CategoriesTable.remove('Category', { id });
-        return true;
+        const params = {
+            TableName: TABLE_NAME,
+            Key: {
+                PK: "CATEGORIES",
+                SK: `CATEGORY#${id}`
+            }
+        };
+        await dynamoDB.delete(params).promise();
+        return true;  // Assuming delete is successful
     }
 }
