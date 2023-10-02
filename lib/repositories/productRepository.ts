@@ -1,85 +1,121 @@
+import { DynamoDB } from 'aws-sdk';
 import { Product } from '../models/product';
-import * as AWS from 'aws-sdk';
-import { Table } from 'dynamodb-onetable';
-import {generateUniqueId} from "./utils";
+import { generateUniqueId } from "./utils";
 
-const client = new AWS.DynamoDB.DocumentClient();
+const dynamoDB = new DynamoDB.DocumentClient();
 
-const ProductsTable = new Table({
-    client,
-    name: process.env.TABLE_NAME,
-    schema: {
-        version: '0',
-        indexes: {
-            primary: { hash: 'pk', sort: 'sk' },
-            GSI1: { hash: 'GSI1PK', sort: 'GSI1SK' }
-        },
-        models: {
-            Product: {
-                pk: { type: 'string', value: 'PRODUCT#${id}' },
-                sk: { type: 'string', value: 'PRODUCT#${id}' },
-                Name: { type: 'string' },
-                Description: { type: 'string' },
-                Price: { type: 'number' },
-                Currency: { type: 'string' },
-                Weight: { type: 'number' },
-                ImageUrl: { type: 'string' },
-                Supplier: { type: 'string' },
-                Category: { type: 'string' },
-                GSI1PK: { type: 'string', value: 'CATEGORY#${Category}' },
-                GSI1SK: { type: 'string', value: 'PRODUCT#${id}' }
-            }
-        }
-    }
-});
+// Asserting that TABLE_NAME is a string. If it's undefined, throw an error.
+const TABLE_NAME = process.env.TABLE_NAME as string;
+if (!TABLE_NAME) {
+    throw new Error('Environment variable TABLE_NAME is not set');
+}
 
 export class ProductRepository {
 
     async getAll(): Promise<Product[]> {
-        const results: any = await ProductsTable.scan('Product');
-        return results as Product[];
+        const params = {
+            TableName: TABLE_NAME,
+            FilterExpression: "begins_with(pk, :productPrefix)",
+            ExpressionAttributeValues: {
+                ":productPrefix": "PRODUCT#"
+            }
+        };
+        const results = await dynamoDB.scan(params).promise();
+        return results.Items as Product[];
     }
 
     async getById(id: string): Promise<Product | null> {
-        const product = await ProductsTable.get('Product', {
-            pk: `PRODUCT#${id}`,
-            sk: `PRODUCT#${id}`
-        });
-        return product as Product | null;
+        const params = {
+            TableName: TABLE_NAME,
+            Key: {
+                PK: `PRODUCT#${id}`,
+                SK: `PRODUCT#${id}`
+            }
+        };
+        const result = await dynamoDB.get(params).promise();
+        return result.Item as Product | null;
     }
 
-
     async getByCategoryId(categoryId: string): Promise<Product[]> {
-        // Assuming GSI1 is the index name for categories
-        const results = await ProductsTable.find('Product', {
-            index: 'GSI1',
-            GSI1PK: `CATEGORY#${categoryId}`
-        });
-        return results as Product[];
+        const params = {
+            TableName: TABLE_NAME,
+            IndexName: "GSI1",  // Assuming GSI1 is the index name for categories
+            KeyConditionExpression: "GSI1PK = :categoryId",
+            ExpressionAttributeValues: {
+                ":categoryId": `CATEGORY#${categoryId}`
+            }
+        };
+        const results = await dynamoDB.query(params).promise();
+        return results.Items as Product[];
     }
 
     async add(product: Product): Promise<Product> {
-        // Assuming you have a method to generate unique IDs
         if (!product.Id) product.Id = generateUniqueId();
 
-        // Ensure all required fields are set
-        if (!product.Name || !product.Price || !product.Currency || !product.Weight || !product.Category) {
-            throw new Error('Incomplete product data');
-        }
+        const newProduct: Product = {
+            ...product,
+            PK: `PRODUCT#${product.Id}`,
+            SK: `PRODUCT#${product.Id}`
+        };
 
-        await ProductsTable.create('Product', product);
-        return product;
+        const params = {
+            TableName: TABLE_NAME,
+            Item: newProduct
+        };
+
+        await dynamoDB.put(params).promise();
+
+        return newProduct;
     }
 
     async update(id: string, updatedProductData: Product): Promise<Product | null> {
-        const product = await ProductsTable.update('Product', { id, ...updatedProductData }) as Product;
-        if (!product) return null;
-        return product;
+
+        const updateExpressions: string[] = [];
+        const expressionAttributeNames: { [key: string]: string } = {};
+        const expressionAttributeValues: { [key: string]: any } = {};
+
+        // Loop over product data and build update expressions
+        for (let key in updatedProductData) {
+            if (key !== 'Id' && updatedProductData[key as keyof Product] !== undefined) {
+                updateExpressions.push(`#${key} = :${key}`);
+                expressionAttributeNames[`#${key}`] = key;
+                expressionAttributeValues[`:${key}`] = updatedProductData[key as keyof Product];
+            }
+        }
+
+
+        const params = {
+            TableName: TABLE_NAME,
+            Key: {
+                PK: `PRODUCT#${id}`,
+                SK: `PRODUCT#${id}`
+            },
+            UpdateExpression: `SET ${updateExpressions.join(', ')}`,
+            ExpressionAttributeNames: expressionAttributeNames,
+            ExpressionAttributeValues: expressionAttributeValues,
+            ReturnValues: "ALL_NEW"
+        };
+
+        const result = await dynamoDB.update(params).promise();
+
+        if (result.Attributes) {
+            const updatedProduct = await this.getById(id);  // Use the getById method to fetch the full product
+            return updatedProduct;
+        } else {
+            return null;
+        }
     }
+
 
     async delete(id: string): Promise<boolean> {
-        (ProductsTable as any).delete({ type: 'Product', id });
+        const params = {
+            TableName: TABLE_NAME,
+            Key: {
+                PK: `PRODUCT#${id}`,
+                SK: `PRODUCT#${id}`
+            }
+        };
+        await dynamoDB.delete(params).promise();
         return true;  // Assuming delete is successful
     }
-
 }

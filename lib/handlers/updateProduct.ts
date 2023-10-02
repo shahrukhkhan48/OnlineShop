@@ -1,41 +1,32 @@
 import { ProductService } from '../services/productService';
 import { ProductRepository } from '../repositories/productRepository';
-import { ProductSchema } from '../models/product';
+import { Product, ProductSchema } from '../models/product';
 import { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from 'aws-lambda';
-export async function main(event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> {
+import { z } from "zod";
+
+interface AppSyncEvent {
+    arguments: {
+        [key: string]: any;
+    };
+}
+
+export async function main(event: AppSyncEvent) {
     const repo = new ProductRepository();
     const service = new ProductService(repo);
 
-    const id = event.pathParameters?.Id;
-    const productData = JSON.parse(event.body || '{}');
+    try {
+        const id = event.arguments?.Id;
+        const productData = event.arguments;
 
-    // Input validation (using zod or any other library)
-    const parsedData = ProductSchema.safeParse(productData);
-    if (!parsedData.success) {
+        const updatedProduct = await service.updateProduct(id, productData as Product);
+
+        return updatedProduct;
+
+    } catch (error) {
+        console.error('Error occurred:', error);  // Log the error for debugging
         return {
-            statusCode: 400,
-            body: JSON.stringify({ error: 'Invalid product data' }),
+            statusCode: 500,
+            body: JSON.stringify({ error: 'Internal Server Error' }),
         };
     }
-
-    if (!id) {
-        return {
-            statusCode: 400,
-            body: JSON.stringify({ error: 'Product ID is required' }),
-        };
-    }
-
-    const updatedProduct = service.updateProduct(id, parsedData.data);
-
-    if (!updatedProduct) {
-        return {
-            statusCode: 404,
-            body: JSON.stringify({ error: 'Product not found' }),
-        };
-    }
-
-    return {
-        statusCode: 200,
-        body: JSON.stringify(updatedProduct),
-    };
 }
