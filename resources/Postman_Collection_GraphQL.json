@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "3a72a894-a830-4c45-9612-7f6bfbff7be0",
+		"_postman_id": "2dcb3831-a214-493e-977d-1d024824ab0c",
 		"name": "Postman Collection (from GraphQL) Copy",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "29863241"
@@ -318,8 +318,7 @@
 		},
 		{
 			"key": "jwt_token",
-			"value": "",
-			"type": "string"
+			"value": ""
 		}
 	]
 }

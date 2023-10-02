@@ -44,29 +44,6 @@ input CategoryInput {
     Description: String
 }
 
-type Mutation {
-    addProduct(product: ProductInput!): Product @aws_cognito_user_pools(cognito_groups: ["Admin"])
-    addCategory(category: CategoryInput!): ProductCategory @aws_cognito_user_pools(cognito_groups: ["Admin"])
-    updateProduct(
-        Id: ID!
-        Name: String
-        Description: String
-        Price: Float
-        Currency: String
-        Weight: Int
-        ImageUrl: String
-        Supplier: String
-        Category: ID
-    ): Product @aws_cognito_user_pools(cognito_groups: ["Admin"])
-    updateCategory(
-        Id: ID!
-        Name: String
-        Description: String
-    ): ProductCategory @aws_cognito_user_pools(cognito_groups: ["Admin"])
-    deleteProduct(Id: ID!): Boolean @aws_cognito_user_pools(cognito_groups: ["Admin"])
-    deleteCategory(Id: ID!): Boolean @aws_cognito_user_pools(cognito_groups: ["Admin"])
-}
-
 type Order {
     Id: ID!
     CustomerEmail: String!
@@ -91,11 +68,31 @@ input OrderDetailInput {
 }
 
 type Mutation {
+    addProduct(product: ProductInput!): Product @aws_cognito_user_pools(cognito_groups: ["Admin"])
+    addCategory(category: CategoryInput!): ProductCategory @aws_cognito_user_pools(cognito_groups: ["Admin"])
+    updateProduct(
+        Id: ID!
+        Name: String
+        Description: String
+        Price: Float
+        Currency: String
+        Weight: Int
+        ImageUrl: String
+        Supplier: String
+        Category: ID
+    ): Product @aws_cognito_user_pools(cognito_groups: ["Admin"])
+    updateCategory(
+        Id: ID!
+        Name: String
+        Description: String
+    ): ProductCategory @aws_cognito_user_pools(cognito_groups: ["Admin"])
+    deleteProduct(Id: ID!): Boolean @aws_cognito_user_pools(cognito_groups: ["Admin"])
+    deleteCategory(Id: ID!): Boolean @aws_cognito_user_pools(cognito_groups: ["Admin"])
     placeOrder(order: OrderInput!): Order @aws_cognito_user_pools(cognito_groups: ["User"])
 }
-
 
 schema {
     query: Query
     mutation: Mutation
+
 }
