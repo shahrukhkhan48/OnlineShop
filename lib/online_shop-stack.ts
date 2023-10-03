@@ -17,10 +17,8 @@ export class OnlineShopStack extends cdk.Stack {
     cdk.Tags.of(this).add('Owner', 'shahrukh.khan@trilogy.com');
 
     const userPool = new cognito.UserPool(this, 'OnlineShopUserPool', {
-      // ... any other user pool configurations you need
     });
 
-    // DynamoDB table setup for products and categories
     const onlineShopTable = new dynamodb.Table(this, 'OnlineShopTable', {
       partitionKey: {
         name: 'PK',
@@ -30,10 +28,9 @@ export class OnlineShopStack extends cdk.Stack {
         name: 'SK',
         type: dynamodb.AttributeType.STRING,
       },
-      billingMode: dynamodb.BillingMode.PAY_PER_REQUEST, // Using on-demand billing mode
+      billingMode: dynamodb.BillingMode.PAY_PER_REQUEST,
     });
 
-// Add Global Secondary Index to support reading products by category
     onlineShopTable.addGlobalSecondaryIndex({
       indexName: 'GSI1',
       partitionKey: {
@@ -46,7 +43,6 @@ export class OnlineShopStack extends cdk.Stack {
       },
     });
 
-    // Base Lambda configuration
     const lambdaConfig = {
       memorySize: 1024,
       timeout: cdk.Duration.seconds(5),
@@ -62,9 +58,6 @@ export class OnlineShopStack extends cdk.Stack {
       },
     };
 
-
-
-    // Individual Lambda functions
     const getProductLambda = new lambdaNodejs.NodejsFunction(this, 'GetProductHandler', {...lambdaConfig, entry: 'lib/handlers/getProduct.ts'});
     const getCategoryLambda = new lambdaNodejs.NodejsFunction(this, 'GetCategoryHandler', {...lambdaConfig, entry: 'lib/handlers/getCategory.ts'});
     const addCategoryLambda = new lambdaNodejs.NodejsFunction(this, 'AddCategoryHandler', {...lambdaConfig, entry: 'lib/handlers/addCategory.ts'});
@@ -75,12 +68,8 @@ export class OnlineShopStack extends cdk.Stack {
     const updateProductLambda = new lambdaNodejs.NodejsFunction(this, 'UpdateProductHandler', {...lambdaConfig, entry: 'lib/handlers/updateProduct.ts'});
     const deleteProductLambda = new lambdaNodejs.NodejsFunction(this, 'DeleteProductHandler', {...lambdaConfig, entry: 'lib/handlers/deleteProduct.ts'});
     const updateCategoryLambda = new lambdaNodejs.NodejsFunction(this, 'UpdateCategoryHandler', {...lambdaConfig, entry: 'lib/handlers/updateCategory.ts'});
-    // const placeOrderLambda = new lambdaNodejs.NodejsFunction(this, 'PlaceOrderHandler', {...lambdaConfig, entry: 'lib/handlers/placeOrder.ts'});
     const processOrderLambda = new  lambdaNodejs.NodejsFunction(this, 'ProcessOrderLambda', {...lambdaConfig, entry: 'lib/handlers/processOrder.ts'});
 
-
-
-// Modify the State Machine definition to handle failures
     const orderProcessingStateMachine = new sfn.StateMachine(this, 'OrderProcessingStateMachine', {
       definition: new sfn.Task(this, 'Process Order Task', {
         task: new sfn_tasks.InvokeFunction(processOrderLambda),
@@ -91,13 +80,11 @@ export class OnlineShopStack extends cdk.Stack {
         errors: ['States.TaskFailed'],
         resultPath: '$.error-info',
       }),
-      // Additional configurations...
     });
 
     lambdaConfig.environment.STATE_MACHINE_ARN = orderProcessingStateMachine.stateMachineArn;
     const placeOrderLambda = new lambdaNodejs.NodejsFunction(this, 'PlaceOrderHandler', {...lambdaConfig, entry: 'lib/handlers/placeOrder.ts'});
 
-// Define AppSync API with USER_POOL authorization
     const api = new appsync.GraphqlApi(this, 'Api', {
       name: 'online-shop-api',
       schema: appsync.Schema.fromAsset('lib/schema.graphql'),
@@ -105,15 +92,13 @@ export class OnlineShopStack extends cdk.Stack {
         defaultAuthorization: {
           authorizationType: appsync.AuthorizationType.USER_POOL,
           userPoolConfig: {
-            userPool: userPool, // Replace with your Cognito User Pool
+            userPool: userPool,
           },
         },
       },
       xrayEnabled: true,
     });
 
-
-    // Connect Lambda functions to AppSync as data sources
     const getProductDs = api.addLambdaDataSource('getProductDs', getProductLambda);
     const getCategoryDs = api.addLambdaDataSource('getCategoryDs', getCategoryLambda);
     const addCategoryDs = api.addLambdaDataSource('addCategoryDs', addCategoryLambda);
@@ -126,7 +111,6 @@ export class OnlineShopStack extends cdk.Stack {
     const getAllCategoriesDs = api.addLambdaDataSource('getAllCategoriesDs', getAllCategoriesLambda);
     const placeOrderDs = api.addLambdaDataSource('PlaceOrderDs', placeOrderLambda);
 
-    // Create resolvers to map GraphQL operations to Lambda functions
     getProductDs.createResolver({
       typeName: 'Query',
       fieldName: 'getProductById',
@@ -264,7 +248,6 @@ export class OnlineShopStack extends cdk.Stack {
       description: 'DynamoDB Table Name',
     });
 
-    // Granting Lambda functions permissions to interact with the DynamoDB table
     onlineShopTable.grantReadWriteData(getProductLambda);
     onlineShopTable.grantReadWriteData(getCategoryLambda);
     onlineShopTable.grantReadWriteData(addCategoryLambda);
@@ -278,13 +261,11 @@ export class OnlineShopStack extends cdk.Stack {
     onlineShopTable.grantReadWriteData(placeOrderLambda);
     orderProcessingStateMachine.grantStartExecution(placeOrderLambda);
 
-    // Grant SES permissions
     processOrderLambda.addToRolePolicy(new iam.PolicyStatement({
       actions: ['ses:SendEmail', 'ses:SendRawEmail'],
       resources: ['*'],
     }));
 
-    // Optionally, if you need to specify the email identity ARN:
     const emailIdentityArn = 'arn:aws:ses:us-east-1:856284715153:identity/shahrukh.khan@trilogy.com';
 
     processOrderLambda.addToRolePolicy(new iam.PolicyStatement({

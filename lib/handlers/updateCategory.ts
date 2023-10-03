@@ -21,7 +21,7 @@ export async function main(event: AppSyncEvent) {
         return updatedCategory;
 
     } catch (error) {
-        console.error('Error occurred:', error);  // Log the error for debugging
+        console.error('Error occurred:', error);
         return {
             statusCode: 500,
             body: JSON.stringify({ error: 'Internal Server Error' }),

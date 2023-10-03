@@ -4,7 +4,6 @@ import { generateUniqueId } from "./utils";
 
 const dynamoDB = new DynamoDB.DocumentClient();
 
-// Asserting that TABLE_NAME is a string. If it's undefined, throw an error.
 const TABLE_NAME = process.env.TABLE_NAME as string;
 if (!TABLE_NAME) {
     throw new Error('Environment variable TABLE_NAME is not set');
@@ -39,7 +38,7 @@ export class ProductRepository {
     async getByCategoryId(categoryId: string): Promise<Product[]> {
         const params = {
             TableName: TABLE_NAME,
-            IndexName: "GSI1",  // Assuming GSI1 is the index name for categories
+            IndexName: "GSI1",
             KeyConditionExpression: "GSI1PK = :categoryId",
             ExpressionAttributeValues: {
                 ":categoryId": `CATEGORY#${categoryId}`
@@ -74,7 +73,6 @@ export class ProductRepository {
         const expressionAttributeNames: { [key: string]: string } = {};
         const expressionAttributeValues: { [key: string]: any } = {};
 
-        // Loop over product data and build update expressions
         for (let key in updatedProductData) {
             if (key !== 'Id' && updatedProductData[key as keyof Product] !== undefined) {
                 updateExpressions.push(`#${key} = :${key}`);
@@ -82,7 +80,6 @@ export class ProductRepository {
                 expressionAttributeValues[`:${key}`] = updatedProductData[key as keyof Product];
             }
         }
-
 
         const params = {
             TableName: TABLE_NAME,
@@ -99,7 +96,7 @@ export class ProductRepository {
         const result = await dynamoDB.update(params).promise();
 
         if (result.Attributes) {
-            const updatedProduct = await this.getById(id);  // Use the getById method to fetch the full product
+            const updatedProduct = await this.getById(id);
             return updatedProduct;
         } else {
             return null;
@@ -116,6 +113,6 @@ export class ProductRepository {
             }
         };
         await dynamoDB.delete(params).promise();
-        return true;  // Assuming delete is successful
+        return true;
     }
 }

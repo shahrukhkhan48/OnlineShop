@@ -4,7 +4,6 @@ import { StepFunctions } from "aws-sdk";
 
 export const main: APIGatewayProxyHandler = async (event: any): Promise<any> => {
     try {
-        // Extracting the token
         const token = event.request?.headers?.authorization;
 
         if (!token) {
@@ -15,20 +14,17 @@ export const main: APIGatewayProxyHandler = async (event: any): Promise<any> => 
             };
         }
 
-        // Decode token
         const decodedToken: any = jwtDecode(token);
         const customerEmail = decodedToken.email;
 
         const order = event.arguments?.order;
         const { ShippingAddress, OrderDetails } = order;
 
-        // Get the current date
         const orderDate = new Date().toISOString();
 
         console.log(`Email: ${customerEmail}, Address: ${ShippingAddress}, Date: ${orderDate}`);
         console.log('Order Details:', OrderDetails);
 
-        // Start Step Function
         const stepfunctions = new StepFunctions();
         const stateMachineArn = process.env.STATE_MACHINE_ARN;
 
@@ -42,7 +38,7 @@ export const main: APIGatewayProxyHandler = async (event: any): Promise<any> => 
 
         const params = {
             stateMachineArn,
-            name: `OrderProcessing-${new Date().getTime()}`, // Ensuring the name is unique
+            name: `OrderProcessing-${new Date().getTime()}`,
             input: JSON.stringify({
                 customerEmail,
                 ShippingAddress,
@@ -55,10 +51,8 @@ export const main: APIGatewayProxyHandler = async (event: any): Promise<any> => 
 
         console.log('Step Function Started:', execution);
 
-        // Generating a dummy order ID for this example. In a real-world scenario, you might want to use a value from the execution result, a UUID, or a value from a database.
         const orderId = `ORD-${new Date().getTime()}`;
 
-        // Returning the order information in the response, matching your GraphQL schema
         return {
             statusCode: 200,
             body: JSON.stringify({

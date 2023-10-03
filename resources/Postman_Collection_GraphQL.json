@@ -170,6 +170,33 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "placeOrder",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "mutation placeOrder ($order: OrderInput!) {\n    placeOrder (order: $order) {\n        Id\n        CustomerEmail\n        ShippingAddress\n        OrderDate\n    }\n}",
+								"variables": "{\n  \"order\": {\n    \"ShippingAddress\": \"\",\n    \"OrderDetails\": {\n      \"ProductId\": 0,\n      \"Quantity\": 0\n    }\n  }\n}"
+							}
+						},
+						"url": {
+							"raw": "{{url}}",
+							"host": [
+								"{{url}}"
+							]
+						}
+					},
+					"response": []
 				}
 			]
 		},

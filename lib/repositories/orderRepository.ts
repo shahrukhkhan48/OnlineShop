@@ -4,7 +4,6 @@ import {generateUniqueId} from "./utils";
 
 const dynamoDB = new DynamoDB.DocumentClient();
 
-// Asserting that TABLE_NAME is a string. If it's undefined, throw an error.
 const TABLE_NAME = process.env.TABLE_NAME as string;
 if (!TABLE_NAME) {
     throw new Error('Environment variable TABLE_NAME is not set');

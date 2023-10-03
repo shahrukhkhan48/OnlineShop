@@ -1,14 +1,20 @@
 
 # OnlineShop GraphQL API
 
-This repository contains the GraphQL API for an online shop. It includes operations for managing products, categories, and placing orders.
+The OnlineShop GraphQL API provides an interface to manage an online store, including operations for managing products, categories, and order placements. 
+
+Upon placing an order, AWS Lambda and Step Functions are utilized for order processing and fulfillment, potentially triggering additional workflows like sending confirmation emails via Amazon SES.
 
 ## Prerequisites
 
-1. Install Node.js and npm.
-2. AWS CLI configured with the necessary access rights.
-3. AWS CDK Toolkit installed.
-4. Postman for API testing (optional).
+- **Node.js and npm**: JavaScript runtime and package manager.
+- **AWS CLI**: Command-line tool for interacting with AWS services.
+- **AWS CDK**: Open-source software development framework to define cloud infrastructure in code.
+- **Postman** (Optional): API development and testing tool.
+- **AWS Account**: Set up with the appropriate permissions for Lambda, SES, Step Functions, and DynamoDB.
+- **SES Email Identity**: Verify an email identity to send emails via Amazon SES.
+
+Ensure the AWS CLI and AWS CDK are configured with the necessary access keys and region.
 
 ## Setup
 
@@ -19,7 +25,7 @@ This repository contains the GraphQL API for an online shop. It includes operati
 
 2. Navigate to the project directory:
    ```
-   cd OnlineShop-dev_graphql
+   cd OnlineShop
    ```
 
 3. Install dependencies:
@@ -94,3 +100,15 @@ node resources/setPassword.js
     - `deleteProduct`: Deletes a specific product.
     - `deleteCategory`: Deletes a specific product category.
     - `placeOrder`: Places a new order.
+      Order Processing and Fulfillment
+      When an order is placed:
+
+
+## Order Processing and Fulfillment
+
+Upon placing an order via the `placeOrder` mutation, a Lambda function is triggered to process the order. The function performs several tasks:
+
+- Sends an order confirmation email to the customer using **Amazon SES**. Ensure that the email identity used for sending emails is verified in SES.
+- Triggers an **AWS Step Function** for further order processing and fulfillment, potentially involving multiple steps and Lambda functions for different stages of the order lifecycle.
+
+Ensure that the IAM roles associated with the Lambda function and Step Function have the necessary permissions to interact with SES and any other AWS services involved in order processing and fulfillment.

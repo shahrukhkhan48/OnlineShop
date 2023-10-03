@@ -4,7 +4,6 @@ import { generateUniqueId } from "./utils";
 
 const dynamoDB = new DynamoDB.DocumentClient();
 
-// Asserting that TABLE_NAME is a string. If it's undefined, throw an error.
 const TABLE_NAME = process.env.TABLE_NAME as string;
 if (!TABLE_NAME) {
     throw new Error('Environment variable TABLE_NAME is not set');
@@ -60,7 +59,6 @@ export class CategoryRepository {
         const expressionAttributeNames: { [key: string]: string } = {};
         const expressionAttributeValues: { [key: string]: any } = {};
 
-        // Loop over category data and build update expressions
         for (let key in updatedCategoryData) {
             if (key !== 'Id' && key !== 'PK' && key !== 'SK' && updatedCategoryData[key as keyof Category] !== undefined) {
                 updateExpressions.push(`#${key} = :${key}`);
@@ -69,7 +67,6 @@ export class CategoryRepository {
             }
         }
 
-        // Check if there's anything to update
         if (updateExpressions.length === 0) {
             throw new Error('No valid fields provided for update');
         }
@@ -89,7 +86,7 @@ export class CategoryRepository {
         const result = await dynamoDB.update(params).promise();
 
         if (result.Attributes) {
-            const updatedCategory = await this.getById(id);  // Use the getById method to fetch the full category
+            const updatedCategory = await this.getById(id);
             return updatedCategory;
         } else {
             return null;
@@ -105,6 +102,6 @@ export class CategoryRepository {
             }
         };
         await dynamoDB.delete(params).promise();
-        return true;  // Assuming delete is successful
+        return true;
     }
 }

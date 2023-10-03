@@ -8,7 +8,7 @@ export async function main(event: any): Promise<Product> {
 
     const productData: Product = event.arguments.product;
 
-    const newProduct = await service.addProduct(productData);  // Note the 'await' here
+    const newProduct = await service.addProduct(productData);
 
     if (!newProduct || !newProduct.Name || !newProduct.Price || !newProduct.Currency || !newProduct.Weight || !newProduct.Category) {
         throw new Error('Incomplete product data returned from service');

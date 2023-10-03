@@ -3,10 +3,8 @@ import * as Handlebars from 'handlebars';
 
 export const main = async (event: any) => {
     try {
-        // Extracting order details from the event object
         const { customerEmail, ShippingAddress, OrderDetails, orderDate } = event;
 
-        // Generate email content using Handlebars
         const source = `
         <p>Thank you for your order!</p>
         <p>Order Details:</p>
@@ -22,7 +20,6 @@ export const main = async (event: any) => {
         const template = Handlebars.compile(source);
         const emailHtml = template({ orderDate, ShippingAddress, OrderDetails });
 
-        // Send email using SES
         const ses = new SES();
         await ses.sendEmail({
             Destination: { ToAddresses: [customerEmail] },
@@ -30,7 +27,7 @@ export const main = async (event: any) => {
                 Body: { Html: { Charset: 'UTF-8', Data: emailHtml } },
                 Subject: { Charset: 'UTF-8', Data: 'Order Confirmation' }
             },
-            Source: 'shahrukh.khan@trilogy.com', // Replace with your SES verified email address
+            Source: 'shahrukh.khan@trilogy.com',
         }).promise();
 
         console.log('Email sent successfully');
