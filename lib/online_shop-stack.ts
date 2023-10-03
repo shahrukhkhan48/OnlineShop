@@ -5,6 +5,10 @@ import * as lambdaNodejs from '@aws-cdk/aws-lambda-nodejs';
 import * as cognito from '@aws-cdk/aws-cognito';
 import {CfnUserPoolUserToGroupAttachmentProps} from "@aws-cdk/aws-cognito";
 import * as dynamodb from '@aws-cdk/aws-dynamodb';
+import * as sfn from '@aws-cdk/aws-stepfunctions';
+import * as iam from '@aws-cdk/aws-iam';
+import * as sfn_tasks from '@aws-cdk/aws-stepfunctions-tasks';
+import * as sqs from '@aws-cdk/aws-sqs';
 
 export class OnlineShopStack extends cdk.Stack {
   constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
@@ -54,8 +58,11 @@ export class OnlineShopStack extends cdk.Stack {
       },
       environment: {
         TABLE_NAME: onlineShopTable.tableName,
+        STATE_MACHINE_ARN: '',
       },
     };
+
+
 
     // Individual Lambda functions
     const getProductLambda = new lambdaNodejs.NodejsFunction(this, 'GetProductHandler', {...lambdaConfig, entry: 'lib/handlers/getProduct.ts'});
@@ -68,6 +75,26 @@ export class OnlineShopStack extends cdk.Stack {
     const updateProductLambda = new lambdaNodejs.NodejsFunction(this, 'UpdateProductHandler', {...lambdaConfig, entry: 'lib/handlers/updateProduct.ts'});
     const deleteProductLambda = new lambdaNodejs.NodejsFunction(this, 'DeleteProductHandler', {...lambdaConfig, entry: 'lib/handlers/deleteProduct.ts'});
     const updateCategoryLambda = new lambdaNodejs.NodejsFunction(this, 'UpdateCategoryHandler', {...lambdaConfig, entry: 'lib/handlers/updateCategory.ts'});
+    // const placeOrderLambda = new lambdaNodejs.NodejsFunction(this, 'PlaceOrderHandler', {...lambdaConfig, entry: 'lib/handlers/placeOrder.ts'});
+    const processOrderLambda = new  lambdaNodejs.NodejsFunction(this, 'ProcessOrderLambda', {...lambdaConfig, entry: 'lib/handlers/processOrder.ts'});
+
+
+
+// Modify the State Machine definition to handle failures
+    const orderProcessingStateMachine = new sfn.StateMachine(this, 'OrderProcessingStateMachine', {
+      definition: new sfn.Task(this, 'Process Order Task', {
+        task: new sfn_tasks.InvokeFunction(processOrderLambda),
+      }).addCatch(new sfn.Fail(this, 'Fail and Send to DLQ', {
+        error: 'ORDER_PROCESSING_FAILED',
+        cause: 'The order processing failed and is sent to DLQ',
+      }), {
+        errors: ['States.TaskFailed'],
+        resultPath: '$.error-info',
+      }),
+      // Additional configurations...
+    });
+
+    lambdaConfig.environment.STATE_MACHINE_ARN = orderProcessingStateMachine.stateMachineArn;
     const placeOrderLambda = new lambdaNodejs.NodejsFunction(this, 'PlaceOrderHandler', {...lambdaConfig, entry: 'lib/handlers/placeOrder.ts'});
 
 // Define AppSync API with USER_POOL authorization
@@ -249,6 +276,21 @@ export class OnlineShopStack extends cdk.Stack {
     onlineShopTable.grantReadWriteData(deleteProductLambda);
     onlineShopTable.grantReadWriteData(updateCategoryLambda);
     onlineShopTable.grantReadWriteData(placeOrderLambda);
+    orderProcessingStateMachine.grantStartExecution(placeOrderLambda);
 
+    // Grant SES permissions
+    processOrderLambda.addToRolePolicy(new iam.PolicyStatement({
+      actions: ['ses:SendEmail', 'ses:SendRawEmail'],
+      resources: ['*'],
+    }));
+
+    // Optionally, if you need to specify the email identity ARN:
+    const emailIdentityArn = 'arn:aws:ses:us-east-1:856284715153:identity/shahrukh.khan@trilogy.com';
+
+    processOrderLambda.addToRolePolicy(new iam.PolicyStatement({
+      actions: ['ses:SendEmail', 'ses:SendRawEmail'],
+      resources: [emailIdentityArn],
+    }));
+    const dlq = new sqs.Queue(this, 'OrderProcessingDLQ');
   }
 }
