@@ -259,6 +259,7 @@ export class OnlineShopStack extends cdk.Stack {
     onlineShopTable.grantReadWriteData(deleteProductLambda);
     onlineShopTable.grantReadWriteData(updateCategoryLambda);
     onlineShopTable.grantReadWriteData(placeOrderLambda);
+    onlineShopTable.grantReadWriteData(processOrderLambda);
     orderProcessingStateMachine.grantStartExecution(placeOrderLambda);
 
     processOrderLambda.addToRolePolicy(new iam.PolicyStatement({
@@ -272,6 +273,8 @@ export class OnlineShopStack extends cdk.Stack {
       actions: ['ses:SendEmail', 'ses:SendRawEmail'],
       resources: [emailIdentityArn],
     }));
-    const dlq = new sqs.Queue(this, 'OrderProcessingDLQ');
+
+
+
   }
 }
