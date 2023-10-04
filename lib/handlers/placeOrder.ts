@@ -22,9 +22,6 @@ export const main: APIGatewayProxyHandler = async (event: any): Promise<any> => 
 
         const orderDate = new Date().toISOString();
 
-        console.log(`Email: ${customerEmail}, Address: ${ShippingAddress}, Date: ${orderDate}`);
-        console.log('Order Details:', OrderDetails);
-
         const stepfunctions = new StepFunctions();
         const stateMachineArn = process.env.STATE_MACHINE_ARN;
 
@@ -36,10 +33,13 @@ export const main: APIGatewayProxyHandler = async (event: any): Promise<any> => 
             };
         }
 
+        const orderId = `ORD-${new Date().getTime()}`;
+
         const params = {
             stateMachineArn,
             name: `OrderProcessing-${new Date().getTime()}`,
             input: JSON.stringify({
+                orderId,
                 customerEmail,
                 ShippingAddress,
                 OrderDetails,
@@ -49,25 +49,15 @@ export const main: APIGatewayProxyHandler = async (event: any): Promise<any> => 
 
         const execution = await stepfunctions.startExecution(params).promise();
 
-        console.log('Step Function Started:', execution);
-
-        const orderId = `ORD-${new Date().getTime()}`;
-
         return {
-            statusCode: 200,
-            body: JSON.stringify({
-                Id: orderId,
-                OrderDate: orderDate,
-                CustomerEmail: customerEmail,
-                ShippingAddress: ShippingAddress,
-                OrderDetails: OrderDetails
-            }),
+            Id: orderId,
+            OrderDate: orderDate,
+            CustomerEmail: customerEmail,
+            ShippingAddress: ShippingAddress,
+            OrderDetails: OrderDetails
         };
     } catch (error) {
         console.error('Error placing order:', error);
-        return {
-            statusCode: 500,
-            body: JSON.stringify({ message: 'Error placing order' }),
-        };
+        throw new Error('Error placing order');
     }
 };
