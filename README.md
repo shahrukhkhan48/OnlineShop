@@ -52,6 +52,22 @@ To set initial passwords for users:
 node resources/setPassword.js
 ```
 
+
+**Default User Credentials**
+
+There are two user roles with default credentials for initial setup and testing:
+
+- **Admin**
+    - Username: `shahrukh.khan@trilogy.com`
+    - Password: `Admin!123`
+
+- **Customer**
+    - Username: `customer@trilogy.com`
+    - Password: `Cust!123`
+
+Ensure to change these credentials for production use and always store sensitive information securely.
+
+
 ## Deploying with AWS CDK
 
 1. Bootstrap the CDK toolkit (only needed once per AWS account):
@@ -100,8 +116,6 @@ node resources/setPassword.js
     - `deleteProduct`: Deletes a specific product.
     - `deleteCategory`: Deletes a specific product category.
     - `placeOrder`: Places a new order.
-      Order Processing and Fulfillment
-      When an order is placed:
 
 
 ## Order Processing and Fulfillment
