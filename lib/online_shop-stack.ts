@@ -259,19 +259,23 @@ export class OnlineShopStack extends cdk.Stack {
     onlineShopTable.grantReadWriteData(deleteProductLambda);
     onlineShopTable.grantReadWriteData(updateCategoryLambda);
     onlineShopTable.grantReadWriteData(placeOrderLambda);
-    orderProcessingStateMachine.grantStartExecution(placeOrderLambda);
+    onlineShopTable.grantReadWriteData(processOrderLambda);
 
-    processOrderLambda.addToRolePolicy(new iam.PolicyStatement({
-      actions: ['ses:SendEmail', 'ses:SendRawEmail'],
-      resources: ['*'],
-    }));
+    orderProcessingStateMachine.grantStartExecution(placeOrderLambda);
+    orderProcessingStateMachine.grantStartExecution(processOrderLambda);
 
     const emailIdentityArn = 'arn:aws:ses:us-east-1:856284715153:identity/shahrukh.khan@trilogy.com';
+
+// Add SES permissions to PlaceOrderHandler
+    placeOrderLambda.addToRolePolicy(new iam.PolicyStatement({
+      actions: ['ses:SendEmail', 'ses:SendRawEmail'],
+      resources: [emailIdentityArn],
+    }));
 
     processOrderLambda.addToRolePolicy(new iam.PolicyStatement({
       actions: ['ses:SendEmail', 'ses:SendRawEmail'],
       resources: [emailIdentityArn],
     }));
-    const dlq = new sqs.Queue(this, 'OrderProcessingDLQ');
+
   }
 }

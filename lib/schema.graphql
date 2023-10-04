@@ -44,12 +44,21 @@ input CategoryInput {
     Description: String
 }
 
+enum OrderStatus {
+    PLACED
+    PROCESSING
+    SHIPPED
+    DELIVERED
+    FAILED
+}
+
 type Order {
     Id: ID!
     CustomerEmail: String!
     ShippingAddress: String!
     OrderDetails: [OrderDetail]!
     OrderDate: String!
+    Status: OrderStatus!
 }
 
 type OrderDetail {

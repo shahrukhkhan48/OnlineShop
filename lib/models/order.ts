@@ -12,7 +12,8 @@ export const OrderSchema = z.object({
             Quantity: z.number()
         })
     ),
-    OrderDate: z.string()
+    OrderDate: z.string(),
+    Status: z.string()
 });
 
 export type Order = z.infer<typeof OrderSchema>;

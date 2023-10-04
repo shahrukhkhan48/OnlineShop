@@ -1,6 +1,6 @@
 import { DynamoDB } from 'aws-sdk';
 import { Order } from '../models/order';
-import {generateUniqueId} from "./utils";
+import { generateUniqueId } from "./utils";
 
 const dynamoDB = new DynamoDB.DocumentClient();
 
@@ -11,10 +11,7 @@ if (!TABLE_NAME) {
 
 export class OrderRepository {
 
-    async placeOrder(customerEmail: string, ShippingAddress: string, OrderDetails: any[]): Promise<Order> {
-        const orderDate = new Date().toISOString();
-        const orderId = generateUniqueId();
-
+    async placeOrder(orderDate: string,orderId: string, customerEmail: string, ShippingAddress: string, OrderDetails: any[], Status: string): Promise<Order> {
         const order: Order = {
             PK: `ORDER#${orderId}`,
             SK: orderDate,
@@ -22,7 +19,8 @@ export class OrderRepository {
             CustomerEmail: customerEmail,
             ShippingAddress: ShippingAddress,
             OrderDetails: OrderDetails,
-            OrderDate: orderDate
+            OrderDate: orderDate,
+            Status: Status
         };
 
         const params = {
@@ -35,4 +33,23 @@ export class OrderRepository {
         return order;
     }
 
+    // New method to update order status
+    async updateOrderStatus(orderId: string, newStatus: string): Promise<void> {
+        const params = {
+            TableName: TABLE_NAME,
+            Key: {
+                PK: `ORDER#${orderId}`,
+                SK: 'Your Sort Key Value Here'  // Please replace this with actual SK value
+            },
+            UpdateExpression: "set #status = :s",
+            ExpressionAttributeNames: {
+                "#status": "Status"
+            },
+            ExpressionAttributeValues: {
+                ":s": newStatus
+            }
+        };
+
+        await dynamoDB.update(params).promise();
+    }
 }

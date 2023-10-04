@@ -4,7 +4,18 @@ import { OrderRepository } from '../repositories/orderRepository';
 export class OrderService {
     constructor(private repo: OrderRepository) {}
 
-    async placeOrder(customerEmail: string, ShippingAddress: string, OrderDetails: any[]): Promise<Order> {
-        return await this.repo.placeOrder(customerEmail, ShippingAddress, OrderDetails);
+    async placeOrder(
+        orderDate: string,
+        orderId: string,
+        customerEmail: string,
+        shippingAddress: string,
+        orderDetails: { productId: string, quantity: number }[],
+        status: 'PLACED' | 'PROCESSING' | 'SHIPPED' | 'DELIVERED' | 'FAILED'
+    ): Promise<Order> {
+        return this.repo.placeOrder(orderDate, orderId, customerEmail, shippingAddress, orderDetails, status);
+    }
+
+    async updateOrderStatus(orderId: string, newStatus: string): Promise<void> {
+        return this.repo.updateOrderStatus(orderId, newStatus);
     }
 }
