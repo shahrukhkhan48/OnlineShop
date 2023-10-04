@@ -100,22 +100,73 @@ Ensure to change these credentials for production use and always store sensitive
 3. Use the Query Editor to execute GraphQL operations. Sample requests and mutations are provided in the `GrpahQL_postman_collection.json` file.
 
 
+
 ## API Operations
 
-- **Queries**:
-    - `listCategories`: Lists all product categories.
-    - `getCategoryById`: Fetches a specific product category by its ID.
-    - `listProductsByCategory`: Lists products under a specific category.
-    - `getProductById`: Fetches a specific product by its ID.
+### Queries
 
-- **Mutations**:
-    - `addProduct`: Adds a new product.
-    - `addCategory`: Adds a new product category.
-    - `updateProduct`: Updates an existing product's details.
-    - `updateCategory`: Updates an existing product category's details.
-    - `deleteProduct`: Deletes a specific product.
-    - `deleteCategory`: Deletes a specific product category.
-    - `placeOrder`: Places a new order.
+- **`listCategories`**:
+    - **Description**: Retrieve all available product categories in the shop.
+    - **Use Case**: Useful for displaying available categories to customers or for filtering products by category.
+
+- **`getCategoryById`**:
+    - **Description**: Retrieve a specific category using its unique ID.
+    - **Use Case**: Use this query when you need detailed information about a specific category, such as when editing category details.
+    - **Input**:
+        - `id` (Required): The unique identifier of the category.
+
+- **`listProductsByCategory`**:
+    - **Description**: List all products under a specified category.
+    - **Use Case**: Ideal for filtering products to display to users based on their selected category.
+    - **Input**:
+        - `categoryId` (Required): The unique identifier of the category.
+
+- **`getProductById`**:
+    - **Description**: Retrieve details of a specific product using its ID.
+    - **Use Case**: Useful when you need detailed information about a specific product, such as displaying product details to customers or for editing purposes.
+    - **Input**:
+        - `id` (Required): The unique identifier of the product.
+
+### Mutations
+
+- **`addProduct`**:
+    - **Description**: Add a new product to the store.
+    - **Input**:
+        - `product` (Required): An object containing details of the new product such as name, description, price, and category ID.
+
+- **`addCategory`**:
+    - **Description**: Create a new product category.
+    - **Input**:
+        - `category` (Required): An object containing details of the new category such as name and description.
+
+- **`updateProduct`**:
+    - **Description**: Update the details of an existing product.
+    - **Use Case**: Use this mutation to update product information, such as price changes, updating descriptions, or changing its category.
+    - **Input**:
+        - `product` (Required): An object containing the ID of the product to update and the fields to update with new values.
+
+- **`updateCategory`**:
+    - **Description**: Update the details of an existing product category.
+    - **Input**:
+        - `category` (Required): An object containing the ID of the category to update and the fields to update with new values.
+
+- **`deleteProduct`**:
+    - **Description**: Remove a product from the store.
+    - **Use Case**: Use this mutation to remove listings that are no longer available or relevant from the store.
+    - **Input**:
+        - `id` (Required): The unique identifier of the product to delete.
+
+- **`deleteCategory`**:
+    - **Description**: Remove a product category.
+    - **Use Case**: Use this mutation to remove categories that are no longer relevant or in use, ensuring to migrate any products within the category to a new category first.
+    - **Input**:
+        - `id` (Required): The unique identifier of the category to delete.
+
+- **`placeOrder`**:
+    - **Description**: Place a new order, triggering order processing workflows.
+    - **Use Case**: This mutation is utilized when a customer finalizes their order, triggering back-end workflows for order processing, email confirmations, and potentially further order fulfillment processes.
+    - **Input**:
+        - `order` (Required): An object containing order details, such as the shipping address and an array of product IDs and quantities.
 
 
 ## Order Processing and Fulfillment
@@ -126,3 +177,59 @@ Upon placing an order via the `placeOrder` mutation, a Lambda function is trigge
 - Triggers an **AWS Step Function** for further order processing and fulfillment, potentially involving multiple steps and Lambda functions for different stages of the order lifecycle.
 
 Ensure that the IAM roles associated with the Lambda function and Step Function have the necessary permissions to interact with SES and any other AWS services involved in order processing and fulfillment.
+
+
+## Troubleshooting
+
+### Issue: Unauthorized Error during API calls
+Ensure that:
+- You have set up the initial passwords using `node resources/setPassword.js`.
+- You are using the correct JWT token for authorization.
+- Your IAM roles and policies are configured correctly.
+
+### Issue: SES Email Sending Errors
+Ensure that:
+- The email address or domain used in SES is verified.
+- The IAM role attached to the Lambda function has permission to send emails using SES.
+- SES is set up in the same region where you are deploying your AWS resources.
+
+### Issue: Step Functions Execution Error
+Ensure that:
+- The IAM role has the correct policies to execute Step Functions.
+- The state machine ARN in your Lambda function points to the correct Step Function.
+
+## Contribution and Development
+
+Contributions to the OnlineShop API are welcomed! Here’s how you can install, develop, and test changes to the API:
+
+1. **Fork and Clone**:
+   Fork the repository and clone it to your local development environment.
+
+2. **Branch Strategy**:
+   Create a new branch for each feature, enhancement, or bugfix.
+
+3. **Testing**:
+   Ensure that your changes pass all existing tests and write new tests for added functionality.
+
+4. **Pull Request**:
+   Submit a pull request to the main branch for review.
+
+Please adhere to the coding standards used throughout the project and provide clear, comprehensive commit messages.
+
+## Security Practices
+
+When deploying the OnlineShop API, especially in a production environment, consider the following security practices:
+
+- **Secret Management**:
+  Use AWS Secrets Manager or another secure method to handle sensitive information, such as database credentials or API keys.
+
+- **IAM Policies**:
+  Adhere to the principle of least privilege when configuring IAM roles and policies.
+
+- **API Security**:
+  Ensure APIs are secured using appropriate authorization mechanisms and consider using API keys or VPCs for additional security.
+
+- **Data Encryption**:
+  Enable encryption at rest for data stored in DynamoDB and ensure data transmitted over the network is done securely using HTTPS/TLS.
+
+Always conduct a thorough security review and adhere to best practices to safeguard your application and data.
