@@ -1,5 +1,5 @@
 
-# OnlineShop GraphQL API
+# AWS Serverless Task
 
 The OnlineShop GraphQL API provides an interface to manage an online store, including operations for managing products, categories, and order placements. 
 
