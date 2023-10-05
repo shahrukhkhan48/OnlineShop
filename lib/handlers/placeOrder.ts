@@ -49,15 +49,8 @@ export const main: APIGatewayProxyHandler = async (event: any): Promise<any> => 
 
         const execution = await stepfunctions.startExecution(params).promise();
 
-        return {
-            Id: orderId,
-            OrderDate: orderDate,
-            CustomerEmail: customerEmail,
-            ShippingAddress: ShippingAddress,
-            OrderDetails: OrderDetails
-        };
+        return `Order placed successfully! Order ID: ${orderId}, Customer Email: ${customerEmail}`;
     } catch (error) {
-        console.error('Error placing order:', error);
-        throw new Error('Error placing order');
+       return 'Error placing order: '+ error;
     }
 };

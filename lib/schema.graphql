@@ -88,7 +88,7 @@ type Mutation {
     ): ProductCategory @aws_cognito_user_pools(cognito_groups: ["Admin"])
     deleteProduct(Id: ID!): Boolean @aws_cognito_user_pools(cognito_groups: ["Admin"])
     deleteCategory(Id: ID!): Boolean @aws_cognito_user_pools(cognito_groups: ["Admin"])
-    placeOrder(order: OrderInput!): Order @aws_cognito_user_pools(cognito_groups: ["User"])
+    placeOrder(order: OrderInput!): String @aws_cognito_user_pools(cognito_groups: ["User"])
 }
 
 schema {
