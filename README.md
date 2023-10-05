@@ -168,6 +168,17 @@ Ensure to change these credentials for production use and always store sensitive
     - **Input**:
         - `order` (Required): An object containing order details, such as the shipping address and an array of product IDs and quantities.
 
+          ```
+          mutation MyMutation {
+            placeOrder(order: {
+              ShippingAddress: "Mumbai, India", 
+              OrderDetails: [
+                {ProductId: "01H98D66KWBM9SJF7T11Q9Z2D1", Quantity: 10},
+                {ProductId: "01H98D66QSTAXVBDA739YWZ3TY", Quantity: 3}
+              ]
+            })
+          }
+          ```
 
 ## Order Processing and Fulfillment
 
