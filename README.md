@@ -11,7 +11,6 @@ Upon placing an order, AWS Lambda and Step Functions are utilized for order proc
 - **AWS CLI**: Command-line tool for interacting with AWS services.
 - **AWS CDK**: Open-source software development framework to define cloud infrastructure in code.
 - **Postman** (Optional): API development and testing tool.
-- **AWS Account**: Set up with the appropriate permissions for Lambda, SES, Step Functions, and DynamoDB.
 - **SES Email Identity**: Verify an email identity to send emails via Amazon SES.
 
 Ensure the AWS CLI and AWS CDK are configured with the necessary access keys and region.
@@ -33,8 +32,8 @@ Ensure the AWS CLI and AWS CDK are configured with the necessary access keys and
    npm install
    ```
 
-4. Set up environment variables:
-    - Ensure that `TABLE_NAME` is set with the correct DynamoDB table name.
+4. Pick up the DynamoDB table name from the ouput of CDK Deploy and configure it in `resources/populateDynamoDB.ts`
+   
 
 ## Populating the Database
 
@@ -43,6 +42,7 @@ To populate the DynamoDB table with initial data:
 ```bash
 ts-node resources/populateDynamoDB.ts
 ```
+
 
 ## Setting User Passwords
 
