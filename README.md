@@ -141,7 +141,7 @@ ts-node resources/populateDynamoDB.ts
 To set initial passwords for users:
 
 ```bash
-node resources/setPassword.js
+ts-node resources/setPassword.ts
 ```
 
 ## Using the APIs

@@ -232,9 +232,10 @@ export class OnlineShopStack extends cdk.Stack {
       }
     });
 
-    new cdk.CfnOutput(this, 'UserPoolClientId', {
-      value: userPoolClient.userPoolClientId,
-      description: 'The Client ID for the User Pool App Client',
+    new cdk.CfnOutput(this, 'UserPoolId', {
+      value: userPool.userPoolId,
+      description: 'The ID of the Cognito User Pool',
+      exportName: 'UserPoolIdExport',
     });
 
     const userPoolDomain = new cognito.UserPoolDomain(this, 'UserPoolDomain', {

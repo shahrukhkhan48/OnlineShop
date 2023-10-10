@@ -1,14 +1,17 @@
 import { CognitoIdentityServiceProvider } from 'aws-sdk';
-import { USER_POOL_CONFIG } from './config';
+import { USER_POOL_CONFIG, POST_CDK_DEPLOY_CONFIG } from './config';
 
 const {
-    USER_POOL_ID: userPoolId,
     ADMIN_USERNAME: adminUsername,
     ADMIN_USER_PASSWORD: adminUserPassword,
     CUSTOMER_USERNAME: customerUsername,
     CUSTOMER_USER_PASSWORD: customerUserPassword,
     REGION: region
 } = USER_POOL_CONFIG;
+
+const {
+    USER_POOL_ID: userPoolId,
+} = POST_CDK_DEPLOY_CONFIG;
 
 const cognitoServiceProvider = new CognitoIdentityServiceProvider({ region });
 
