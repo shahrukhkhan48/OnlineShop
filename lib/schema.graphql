@@ -1,4 +1,4 @@
-directive @aws_cognito_user_pools(
+directive @aws_auth(
     cognito_groups: [String!]
 ) on FIELD_DEFINITION | OBJECT
 
@@ -68,8 +68,8 @@ input OrderDetailInput {
 }
 
 type Mutation {
-    addProduct(product: ProductInput!): Product @aws_cognito_user_pools(cognito_groups: ["Admin"])
-    addCategory(category: CategoryInput!): ProductCategory @aws_cognito_user_pools(cognito_groups: ["Admin"])
+    addProduct(product: ProductInput!): Product @aws_auth(cognito_groups: ["Admin"])
+    addCategory(category: CategoryInput!): ProductCategory @aws_auth(cognito_groups: ["Admin"])
     updateProduct(
         Id: ID!
         Name: String
@@ -80,19 +80,18 @@ type Mutation {
         ImageUrl: String
         Supplier: String
         Category: ID
-    ): Product @aws_cognito_user_pools(cognito_groups: ["Admin"])
+    ): Product @aws_auth(cognito_groups: ["Admin"])
     updateCategory(
         Id: ID!
         Name: String
         Description: String
-    ): ProductCategory @aws_cognito_user_pools(cognito_groups: ["Admin"])
-    deleteProduct(Id: ID!): Boolean @aws_cognito_user_pools(cognito_groups: ["Admin"])
-    deleteCategory(Id: ID!): Boolean @aws_cognito_user_pools(cognito_groups: ["Admin"])
-    placeOrder(order: OrderInput!): String @aws_cognito_user_pools(cognito_groups: ["Customer"])
+    ): ProductCategory @aws_auth(cognito_groups: ["Admin"])
+    deleteProduct(Id: ID!): Boolean @aws_auth(cognito_groups: ["Admin"])
+    deleteCategory(Id: ID!): Boolean @aws_auth(cognito_groups: ["Admin"])
+    placeOrder(order: OrderInput!): String @aws_auth(cognito_groups: ["Customer"])
 }
 
 schema {
     query: Query
     mutation: Mutation
-
 }
