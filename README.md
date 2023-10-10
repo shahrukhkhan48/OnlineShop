@@ -35,22 +35,6 @@ Ensure the AWS CLI and AWS CDK are configured with the necessary access keys and
 4. Pick up the DynamoDB table name from the ouput of CDK Deploy and configure it in `resources/populateDynamoDB.ts`
    
 
-## Populating the Database
-
-To populate the DynamoDB table with initial data:
-
-```bash
-ts-node resources/populateDynamoDB.ts
-```
-
-
-## Setting User Passwords
-
-To set initial passwords for users:
-
-```bash
-node resources/setPassword.js
-```
 
 
 **Default User Credentials**
@@ -84,6 +68,26 @@ Ensure to change these credentials for production use and always store sensitive
    ```bash
    cdk destroy
    ```
+
+4. Pick up the DynamoDB table name from CDK Deploy and configure it in resources/populateDynamoDB.ts
+
+
+## Populating the Database
+
+To populate the DynamoDB table with initial data:
+
+```bash
+ts-node resources/populateDynamoDB.ts
+```
+
+
+## Setting User Passwords
+
+To set initial passwords for users:
+
+```bash
+node resources/setPassword.js
+```
 
 ## Using the APIs
 
@@ -208,39 +212,3 @@ Ensure that:
 Ensure that:
 - The IAM role has the correct policies to execute Step Functions.
 - The state machine ARN in your Lambda function points to the correct Step Function.
-
-## Contribution and Development
-
-Contributions to the OnlineShop API are welcomed! Here’s how you can install, develop, and test changes to the API:
-
-1. **Fork and Clone**:
-   Fork the repository and clone it to your local development environment.
-
-2. **Branch Strategy**:
-   Create a new branch for each feature, enhancement, or bugfix.
-
-3. **Testing**:
-   Ensure that your changes pass all existing tests and write new tests for added functionality.
-
-4. **Pull Request**:
-   Submit a pull request to the main branch for review.
-
-Please adhere to the coding standards used throughout the project and provide clear, comprehensive commit messages.
-
-## Security Practices
-
-When deploying the OnlineShop API, especially in a production environment, consider the following security practices:
-
-- **Secret Management**:
-  Use AWS Secrets Manager or another secure method to handle sensitive information, such as database credentials or API keys.
-
-- **IAM Policies**:
-  Adhere to the principle of least privilege when configuring IAM roles and policies.
-
-- **API Security**:
-  Ensure APIs are secured using appropriate authorization mechanisms and consider using API keys or VPCs for additional security.
-
-- **Data Encryption**:
-  Enable encryption at rest for data stored in DynamoDB and ensure data transmitted over the network is done securely using HTTPS/TLS.
-
-Always conduct a thorough security review and adhere to best practices to safeguard your application and data.
