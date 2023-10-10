@@ -8,13 +8,20 @@ import * as dynamodb from '@aws-cdk/aws-dynamodb';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import * as iam from '@aws-cdk/aws-iam';
 import * as sfn_tasks from '@aws-cdk/aws-stepfunctions-tasks';
-import * as sqs from '@aws-cdk/aws-sqs';
+import { AWS_CONFIG } from '../resources/config';
+
+const {
+  OWNER_EMAIL: ownerEmail,
+  CUSTOMER_EMAIL: customerEmail,
+  SES_REGION: sesRegion,
+  SES_ACCOUNT_ID: sesAccountId
+} = AWS_CONFIG;
 
 export class OnlineShopStack extends cdk.Stack {
   constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
-    cdk.Tags.of(this).add('Owner', 'shahrukh.khan@trilogy.com');
+    cdk.Tags.of(this).add('Owner', ownerEmail);
 
     const userPool = new cognito.UserPool(this, 'OnlineShopUserPool', {
     });
@@ -182,9 +189,9 @@ export class OnlineShopStack extends cdk.Stack {
 
     const adminUser = new cognito.CfnUserPoolUser(this, 'AdminUser', {
       userPoolId: userPool.userPoolId,
-      username: 'shahrukh.khan@trilogy.com',
+      username: ownerEmail,
       userAttributes: [
-        { name: 'email', value: 'shahrukh.khan@trilogy.com' },
+        { name: 'email', value: ownerEmail },
       ],
     });
 
@@ -196,9 +203,9 @@ export class OnlineShopStack extends cdk.Stack {
 
     const customerUser = new cognito.CfnUserPoolUser(this, 'CustomerUser',  {
       userPoolId: userPool.userPoolId,
-      username: 'customer@trilogy.com',
+      username: customerEmail,
       userAttributes: [
-        { name: 'email', value: 'customer@trilogy.com' },
+        { name: 'email', value: customerEmail },
       ],
     });
 
@@ -267,7 +274,7 @@ export class OnlineShopStack extends cdk.Stack {
       resources: ['*'],
     }));
 
-    const emailIdentityArn = 'arn:aws:ses:us-east-1:856284715153:identity/shahrukh.khan@trilogy.com';
+    const emailIdentityArn = `arn:aws:ses:${sesRegion}:${sesAccountId}:identity/${ownerEmail}`;
 
     processOrderLambda.addToRolePolicy(new iam.PolicyStatement({
       actions: ['ses:SendEmail', 'ses:SendRawEmail'],

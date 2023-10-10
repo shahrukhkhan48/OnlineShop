@@ -1,12 +1,6 @@
+import { userPoolId, adminUsername, adminUserPassword, customerUsername, customerUserPassword,  region } from './config';
 
 const cognitoidentityserviceprovider = require('aws-sdk/clients/cognitoidentityserviceprovider');
-
-const userPoolId = 'us-east-1_gUEKnHS9S';  // Replace with your User Pool ID
-const adminUsername = 'shahrukh.khan@trilogy.com';
-const customerUsername = 'customer@trilogy.com';
-const adminUserPassword = 'Admin!123';
-const customerUserPassword = 'Cust!123';
-const region = 'us-east-1';
 
 const cognitoServiceProvider = new cognitoidentityserviceprovider({region: region});
 

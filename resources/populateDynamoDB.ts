@@ -1,21 +1,17 @@
-
 import { DynamoDB } from 'aws-sdk';
 import { readFileSync } from 'fs';
 import { join } from 'path';
+import { POST_CDK_DEPLOY_CONFIG } from './config';
 
-// Read mock data from JSON files
 const products = JSON.parse(readFileSync(join(__dirname, '..', 'data', 'products.json'), 'utf-8'));
 const categories = JSON.parse(readFileSync(join(__dirname, '..', 'data', 'categories.json'), 'utf-8'));
 
-
 const dynamoDB = new DynamoDB.DocumentClient({
-  region: 'us-east-1'
+  region: POST_CDK_DEPLOY_CONFIG.DYNAMODB_REGION
 });
-// DynamoDB table name
-const TABLE_NAME = 'OnlineShopStack-OnlineShopTable008A5D70-1XU04MP3BSOZ4';
 
+const TABLE_NAME = POST_CDK_DEPLOY_CONFIG.DYNAMODB_TABLE_NAME;
 
-// Function to populate categories to DynamoDB
 async function populateCategories() {
   for (const category of categories) {
     const params = {

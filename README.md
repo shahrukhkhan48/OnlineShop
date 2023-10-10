@@ -34,39 +34,97 @@ Ensure the AWS CLI and AWS CDK are configured with the necessary access keys and
 
 
 
-**Default User Credentials**
+### Configuring Application Parameters
 
-There are two user roles with default credentials for initial setup and testing:
+Before deploying your application, it's crucial to set up the configuration parameters. Navigate to the `resources/config.ts` file to update the following configurations:
 
-- **Admin**
-    - Username: `shahrukh.khan@trilogy.com`
-    - Password: `Admin!123`
+#### AWS & SES Configurations
+- `OWNER_EMAIL`: The email for the stack owner/administrator and used for Amazon SES.
+- `CUSTOMER_EMAIL`: The default customer email.
+- `SES_REGION`: The region for Amazon SES.
+- `SES_ACCOUNT_ID`: Your AWS account ID for SES.
 
-- **Customer**
-    - Username: `customer@trilogy.com`
-    - Password: `Cust!123`
+```typescript
+export const AWS_CONFIG = {
+    OWNER_EMAIL: 'shahrukh.khan@trilogy.com',
+    CUSTOMER_EMAIL: 'customer@trilogy.com',
+    SES_REGION: 'us-east-1',
+    SES_ACCOUNT_ID: '856284715153',
+};
+```
 
-Ensure to change these credentials for production use and always store sensitive information securely.
+#### Cognito User Pool & User Configurations
+- `ADMIN_USERNAME` and `CUSTOMER_USERNAME`: Set these to the respective email addresses.
+- `REGION`: AWS region for the User Pool, typically set to the SES region.
+- `ADMIN_USER_PASSWORD` and `CUSTOMER_USER_PASSWORD`: Initial passwords for users. Ensure to store these securely, especially in production environments.
+
+```typescript
+export const USER_POOL_CONFIG = {
+    ADMIN_USERNAME: AWS_CONFIG.OWNER_EMAIL,
+    CUSTOMER_USERNAME: AWS_CONFIG.CUSTOMER_EMAIL,
+    REGION: AWS_CONFIG.SES_REGION,
+    ADMIN_USER_PASSWORD: 'Admin!123',
+    CUSTOMER_USER_PASSWORD: 'Cust!123',
+};
+```
+
+#### Post-CDK Deploy Configurations
+- `USER_POOL_ID`: Formed using the region and a unique identifier.
+- `DYNAMODB_REGION`: The region for DynamoDB, typically set to your SES region.
+- `DYNAMODB_TABLE_NAME`: Name of the DynamoDB table.
+
+**Note**: `USER_POOL_ID` and `DYNAMODB_TABLE_NAME` are often available after a CDK deployment and should be updated in the `config.ts` file accordingly.
+
+```typescript
+export const POST_CDK_DEPLOY_CONFIG = {
+    USER_POOL_ID: `${AWS_CONFIG.SES_REGION}_gUEKnHS9S`,
+    DYNAMODB_REGION: AWS_CONFIG.SES_REGION,
+    DYNAMODB_TABLE_NAME: 'OnlineShopStack-OnlineShopTable008A5D70-1XU04MP3BSOZ4',
+};
+```
+
+### Important Notes:
+- Always ensure to handle sensitive data, such as passwords and email addresses, securely. Consider using services like AWS Secrets Manager in production.
+- Always validate configurations before deploying to prevent potential issues.
+- Update the `config.ts` file with the `USER_POOL_ID` and `DYNAMODB_TABLE_NAME` after running `cdk deploy` as these values are available in the output of the CDK deploy command.
+
 
 
 ## Deploying with AWS CDK
 
-1. Bootstrap the CDK toolkit (only needed once per AWS account):
+1. **Bootstrap the CDK toolkit (only needed once per AWS account):**
    ```bash
    cdk bootstrap
    ```
 
-2. Deploy the stack:
+2. **Deploy the stack:**
    ```bash
    cdk deploy
    ```
 
-3. (Optional) To destroy the stack:
+3. **(Optional) To destroy the stack:**
    ```bash
    cdk destroy
    ```
 
-4. Pick up the DynamoDB table name from CDK Deploy and configure it in resources/populateDynamoDB.ts
+
+4. **Update Configuration Post-Deployment:**
+
+   After running `cdk deploy`, the output in your terminal will display the `UserPoolId` and the `DynamoDB` table name. Ensure to update the `resources/config.ts` file with these values.
+
+    - **DynamoDB Table Name:** Locate the generated table name in the CDK deploy output and update `POST_CDK_DEPLOY_CONFIG.DYNAMODB_TABLE_NAME` in `config.ts`.
+
+    - **UserPoolId:** Find the `UserPoolId` in the CDK deploy output and update `POST_CDK_DEPLOY_CONFIG.USER_POOL_ID` in `config.ts`.
+
+   Example:
+   ```typescript
+   export const POST_CDK_DEPLOY_CONFIG = {
+       USER_POOL_ID: 'extracted_user_pool_id_here',
+       DYNAMODB_TABLE_NAME: 'extracted_dynamodb_table_name_here',
+       // ...other configs
+   };
+   ```
+   These values are crucial for configuring user pools and interacting with your DynamoDB table.
 
 
 ## Populating the Database
