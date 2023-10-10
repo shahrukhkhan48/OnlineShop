@@ -32,9 +32,6 @@ Ensure the AWS CLI and AWS CDK are configured with the necessary access keys and
    npm install
    ```
 
-4. Pick up the DynamoDB table name from the ouput of CDK Deploy and configure it in `resources/populateDynamoDB.ts`
-   
-
 
 
 **Default User Credentials**
