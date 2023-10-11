@@ -1,14 +1,13 @@
 import { SES } from 'aws-sdk';
 import * as Handlebars from 'handlebars';
-import {OrderRepository} from "../repositories/orderRepository";
 import {OrderService} from "../services/orderService";
 
 
 export const main = async (event: any) => {
     try {
 
-        const repo = new OrderRepository();
-        const service = new OrderService(repo);
+        // const repo = new OrderRepository();
+        const service = new OrderService();
 
         const { orderId, customerEmail, ShippingAddress, OrderDetails, orderDate } = event;
 
