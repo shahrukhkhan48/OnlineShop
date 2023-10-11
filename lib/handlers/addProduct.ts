@@ -2,9 +2,15 @@ import { ProductService } from '../services/productService';
 import { ProductRepository } from '../repositories/productRepository';
 import { Product } from '../models/product';
 
-export async function main(event: any): Promise<Product> {
-    const repo = new ProductRepository();
-    const service = new ProductService(repo);
+interface ProductArguments {
+    product: Product;
+}
+
+interface AppSyncEvent {
+    arguments: ProductArguments;
+}
+export async function main(event: AppSyncEvent): Promise<Product> {
+    const service = new ProductService( );
 
     const productData: Product = event.arguments.product;
 

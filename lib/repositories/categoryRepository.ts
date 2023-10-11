@@ -14,25 +14,37 @@ export class CategoryRepository {
     async getAll(): Promise<Category[]> {
         const params = {
             TableName: TABLE_NAME,
-            FilterExpression: "PK = :categoryPrefix",
+            FilterExpression: "begins_with(PK, :categoryPrefix)",
             ExpressionAttributeValues: {
                 ":categoryPrefix": "CATEGORIES"
             }
         };
-        const results = await dynamoDB.scan(params).promise();
-        return results.Items as Category[];
+
+        try {
+            const results = await dynamoDB.scan(params).promise();
+            return (results.Items as Category[]) || [];
+        } catch (error) {
+            console.error('Error occurred in repository layer:', error);
+            throw error;
+        }
     }
 
     async getById(id: string): Promise<Category | null> {
         const params = {
             TableName: TABLE_NAME,
             Key: {
-                PK: "CATEGORIES",
+                PK: 'CATEGORIES',
                 SK: `CATEGORY#${id}`
             }
         };
-        const result = await dynamoDB.get(params).promise();
-        return result.Item as Category | null;
+
+        try {
+            const result = await dynamoDB.get(params).promise();
+            return result.Item as Category | null;
+        } catch (error) {
+            console.error('Error occurred in repository layer:', error);
+            throw error;
+        }
     }
 
     async add(category: Category): Promise<Category> {
@@ -54,13 +66,13 @@ export class CategoryRepository {
         return newCategory;
     }
 
-    async update(id: string, updatedCategoryData: Category): Promise<Category | null> {
+    async update(id: string, updatedCategoryData: Partial<Category>): Promise<Category | null> {
         const updateExpressions: string[] = [];
         const expressionAttributeNames: { [key: string]: string } = {};
         const expressionAttributeValues: { [key: string]: any } = {};
 
         for (let key in updatedCategoryData) {
-            if (key !== 'Id' && key !== 'PK' && key !== 'SK' && updatedCategoryData[key as keyof Category] !== undefined) {
+            if (key !== 'Id' && updatedCategoryData[key as keyof Category] !== undefined) {
                 updateExpressions.push(`#${key} = :${key}`);
                 expressionAttributeNames[`#${key}`] = key;
                 expressionAttributeValues[`:${key}`] = updatedCategoryData[key as keyof Category];
@@ -86,22 +98,28 @@ export class CategoryRepository {
         const result = await dynamoDB.update(params).promise();
 
         if (result.Attributes) {
-            const updatedCategory = await this.getById(id);
-            return updatedCategory;
+            return result.Attributes as Category;
         } else {
             return null;
         }
     }
 
     async delete(id: string): Promise<boolean> {
-        const params = {
+        // First, check if the item exists
+        const Params = {
             TableName: TABLE_NAME,
             Key: {
                 PK: "CATEGORIES",
                 SK: `CATEGORY#${id}`
             }
         };
-        await dynamoDB.delete(params).promise();
+
+        const result = await dynamoDB.get(Params).promise();
+        if (!result.Item) {
+            throw new Error('Category not found');
+        }
+
+        await dynamoDB.delete(Params).promise();
         return true;
     }
 }

@@ -4,24 +4,40 @@ import { Category } from '../models/category';
 export class CategoryService {
     private repo: CategoryRepository;
 
-    constructor(repo: CategoryRepository) {
-        this.repo = repo;
+    constructor() {
+        this.repo = new CategoryRepository();
     }
 
     async getAllCategories(): Promise<Category[]> {
-        return await this.repo.getAll();
+        try {
+            return await this.repo.getAll();
+        } catch (error) {
+            console.error('Error occurred in service layer:', error);
+            throw error;
+        }
     }
 
     async getCategoryById(id: string): Promise<Category | null> {
-        return await this.repo.getById(id);
+        try {
+            return await this.repo.getById(id);
+        } catch (error) {
+            console.error('Error occurred in service layer:', error);
+            throw error;
+        }
     }
 
     async addCategory(category: Category): Promise<Category> {
         return await this.repo.add(category);
     }
 
-    async updateCategory(id: string, updatedCategoryData: Category): Promise<Category | null> {
-        return await this.repo.update(id, updatedCategoryData);
+    async updateCategory(id: string, updatedCategoryData: Partial<Category>): Promise<Category> {
+        const updatedCategory = await this.repo.update(id, updatedCategoryData);
+
+        if (!updatedCategory) {
+            throw new Error(`Failed to update category with ID ${id}`);
+        }
+
+        return updatedCategory;
     }
 
     async deleteCategory(id: string): Promise<boolean> {

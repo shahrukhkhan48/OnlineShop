@@ -1,32 +1,33 @@
 import { ProductService } from '../services/productService';
-import { ProductRepository } from '../repositories/productRepository';
-import { Product, ProductSchema } from '../models/product';
-import { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from 'aws-lambda';
-import { z } from "zod";
+import { Product } from '../models/product';
+
+interface UpdateProductArgs {
+    Id: string;
+    Name?: string;
+    Description?: string;
+    Price?: number;
+    Currency?: string;
+    Weight?: number;
+    ImageUrl?: string;
+    Supplier?: string;
+    Category?: string;
+}
 
 interface AppSyncEvent {
-    arguments: {
-        [key: string]: any;
-    };
+    arguments: UpdateProductArgs;
 }
 
-export async function main(event: AppSyncEvent) {
-    const repo = new ProductRepository();
-    const service = new ProductService(repo);
+export async function main(event: AppSyncEvent): Promise<Product> {
+    const service = new ProductService();
+    const { Id, ...productData } = event.arguments;
 
-    try {
-        const id = event.arguments?.Id;
-        const productData = event.arguments;
+    const updatedProduct = await service.updateProduct(Id, productData);
 
-        const updatedProduct = await service.updateProduct(id, productData as Product);
-
-        return updatedProduct;
-
-    } catch (error) {
-        console.error('Error occurred:', error);
-        return {
-            statusCode: 500,
-            body: JSON.stringify({ error: 'Internal Server Error' }),
-        };
+    if (!updatedProduct) {
+        throw new Error(`Product with ID ${Id} not found or update failed`);
     }
+    return updatedProduct;
 }
+
+
+

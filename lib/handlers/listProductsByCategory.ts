@@ -1,23 +1,20 @@
 import { ProductService } from '../services/productService';
-import { ProductRepository } from '../repositories/productRepository';
-import { APIGatewayProxyEventV2 } from 'aws-lambda';
 import { Product } from '../models/product';
 
 interface AppSyncEvent {
     arguments: {
-        [key: string]: any;
+        Category: string;
     };
 }
 
 export async function main(event: AppSyncEvent): Promise<Product[]> {
-    const repo = new ProductRepository();
-    const service = new ProductService(repo);
+    const service = new ProductService();
 
-    const Category = event.arguments.Category;
+    const { Category } = event.arguments;
     if (!Category) {
         throw new Error('Category ID is required');
     }
 
-    const products = service.getProductsByCategoryId(Category);
+    const products = await service.getProductsByCategoryId(Category);
     return products;
 }

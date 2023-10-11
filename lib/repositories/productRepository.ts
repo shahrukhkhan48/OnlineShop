@@ -67,8 +67,7 @@ export class ProductRepository {
         return newProduct;
     }
 
-    async update(id: string, updatedProductData: Product): Promise<Product | null> {
-
+    async update(id: string, updatedProductData: Partial<Product>): Promise<Product | null> {
         const updateExpressions: string[] = [];
         const expressionAttributeNames: { [key: string]: string } = {};
         const expressionAttributeValues: { [key: string]: any } = {};
@@ -95,24 +94,30 @@ export class ProductRepository {
 
         const result = await dynamoDB.update(params).promise();
 
-        if (result.Attributes) {
-            const updatedProduct = await this.getById(id);
-            return updatedProduct;
-        } else {
-            return null;
+        if (!result.Attributes) {
+            throw new Error(`No product found with id ${id} to update`);
         }
+
+        return result.Attributes as Product;
     }
 
 
     async delete(id: string): Promise<boolean> {
-        const params = {
+        const Params = {
             TableName: TABLE_NAME,
             Key: {
                 PK: `PRODUCT#${id}`,
                 SK: `PRODUCT#${id}`
             }
         };
-        await dynamoDB.delete(params).promise();
+
+        const result = await dynamoDB.get(Params).promise();
+        if (!result.Item) {
+            throw new Error('Product not found');
+        }
+
+        await dynamoDB.delete(Params).promise();
         return true;
     }
+
 }

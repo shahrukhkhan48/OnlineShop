@@ -1,27 +1,30 @@
 import { CategoryService } from '../services/categoryService';
-import { CategoryRepository } from '../repositories/categoryRepository';
-import { Category } from "../models/category";
+import { Category } from '../models/category';
 
 interface AppSyncEvent {
     arguments: {
-        [key: string]: any;
+        Id: string;
     };
 }
 
 export async function main(event: AppSyncEvent): Promise<Category> {
-    const repo = new CategoryRepository();
-    const service = new CategoryService(repo);
+    const { Id } = event.arguments;
 
-    const id = event.arguments?.Id;
-    if (!id) {
+    if (!Id) {
         throw new Error('Category ID is required');
     }
 
-    const category = await service.getCategoryById(id);
+    try {
+        const service = new CategoryService();
+        const category = await service.getCategoryById(Id);
 
-    if (!category) {
-        throw new Error('Category not found');
+        if (!category) {
+            throw new Error('Category not found');
+        }
+
+        return category;
+    } catch (error) {
+        console.error('Error occurred:', error);
+        throw new Error('Internal Server Error');
     }
-
-    return category;
 }

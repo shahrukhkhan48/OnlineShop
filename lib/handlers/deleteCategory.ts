@@ -1,24 +1,26 @@
 import { CategoryService } from '../services/categoryService';
 import { CategoryRepository } from '../repositories/categoryRepository';
 
+interface DeleteCategoryArgs {
+    Id: string;
+}
+
 interface AppSyncEvent {
-    arguments: {
-        Id: string;
-    };
+    arguments: DeleteCategoryArgs;
 }
 
 export async function main(event: AppSyncEvent): Promise<boolean> {
-    const repo = new CategoryRepository();
-    const service = new CategoryService(repo);
+    const service = new CategoryService();
+    const { Id: id } = event.arguments;
 
-    const id = event.arguments.Id;
     if (!id) {
         throw new Error('Category ID is required');
     }
 
-    const success = service.deleteCategory(id);
+    const success = await service.deleteCategory(id);
+
     if (!success) {
-        throw new Error('Category not found');
+        throw new Error('Category not found or deletion failed');
     }
 
     return success;

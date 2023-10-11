@@ -2,18 +2,21 @@ import { CategoryService } from '../services/categoryService';
 import { CategoryRepository } from '../repositories/categoryRepository';
 import { Category } from "../models/category";
 
+interface CategoryInputArgs {
+    category: Category;
+}
+
 interface AppSyncEvent {
-    arguments: {
-        [key: string]: any;
-    };
+    arguments: CategoryInputArgs;
 }
 
 export async function main(event: AppSyncEvent): Promise<Category> {
-    const repo = new CategoryRepository();
-    const service = new CategoryService(repo);
+    const service = new CategoryService();
 
-    const categoryData: Category =  event.arguments.category;
-    const addedCategory = service.addCategory(categoryData);
+    const { category } = event.arguments;
+
+    // Ensure that the service's method is awaited to handle the promise
+    const addedCategory = await service.addCategory(category);
 
     return addedCategory;
 }

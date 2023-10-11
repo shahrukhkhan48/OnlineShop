@@ -2,14 +2,20 @@ import { Product } from '../models/product';
 import { ProductRepository } from '../repositories/productRepository';
 
 export class ProductService {
-    constructor(private repo: ProductRepository) {}
+    private repo = new ProductRepository();
 
     async getAllProducts(): Promise<Product[]> {
         return await this.repo.getAll();
     }
 
-    async getProductById(id: string): Promise<Product | null> {
-        return await this.repo.getById(id);
+    async getProductById(id: string): Promise<Product> {
+        const product = await this.repo.getById(id);
+
+        if (!product) {
+            throw new Error(`Product with ID ${id} not found`);
+        }
+
+        return product;
     }
 
     async getProductsByCategoryId(categoryId: string): Promise<Product[]> {
@@ -20,9 +26,15 @@ export class ProductService {
         return await this.repo.add(product);
     }
 
-    async updateProduct(id: string, updatedProductData: Product): Promise<Product | null> {
-        return await this.repo.update(id, updatedProductData);
+    async updateProduct(id: string, updatedProductData: Partial<Product>): Promise<Product> {
+        const updatedProduct = await this.repo.update(id, updatedProductData);
+        if (!updatedProduct) {
+            throw new Error(`Product with id ${id} not found`);
+        }
+        return updatedProduct;
     }
+
+
 
     async deleteProduct(id: string): Promise<boolean> {
         return await this.repo.delete(id);

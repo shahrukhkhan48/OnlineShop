@@ -1,18 +1,16 @@
 import { ProductService } from '../services/productService';
-import { ProductRepository } from '../repositories/productRepository';
 import { Product } from '../models/product';
 
 interface AppSyncEvent {
     arguments: {
-        [key: string]: any;
+        Id: string;
     };
 }
 
 export async function main(event: AppSyncEvent): Promise<Product> {
-    const repo = new ProductRepository();
-    const service = new ProductService(repo);
+    const service = new ProductService();
+    const { Id: id } = event.arguments;
 
-    const id = event.arguments?.Id;
     if (!id) {
         throw new Error('Product ID is required');
     }
@@ -25,4 +23,3 @@ export async function main(event: AppSyncEvent): Promise<Product> {
 
     return product;
 }
-
