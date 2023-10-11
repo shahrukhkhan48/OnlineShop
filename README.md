@@ -144,6 +144,30 @@ To set initial passwords for users:
 ts-node resources/setPassword.ts
 ```
 
+
+## Email Configuration
+
+The OnlineShop application employs **Amazon Simple Email Service (SES)** for sending email notifications, such as order confirmations.
+
+- **Verified Sender**: `shahrukh.khan@trilogy.com` is a verified email identity in SES, allowing it to send emails.
+- **Non-Verified Receiver**: `customer@trilogy.com` is **not** verified and, therefore, cannot receive emails in the SES Sandbox environment. Ensure you verify all email addresses that are intended to send and receive emails during testing.
+
+### Moving Out of SES Sandbox
+
+To send emails to non-verified addresses and enhance your sending limits, it's imperative to move out of the Amazon SES Sandbox environment.
+
+#### 1. Ensure Email Identity Verification
+
+Make sure your sending email identity, such as `shahrukh.khan@trilogy.com`, is verified. This can be achieved in the SES console under "Identity Management."
+
+#### 2. Submit a Request to Move Out of the Sandbox
+
+- Navigate to the [SES Console](https://console.aws.amazon.com/ses/).
+- Click on "Sending Statistics" in the left-hand navigation.
+- Select "Request Production Access" and complete the form with pertinent details regarding your use case and expected email volume.
+- AWS will typically respond to these requests within one business day.
+
+
 ## Using the APIs
 
 ### Via Postman
