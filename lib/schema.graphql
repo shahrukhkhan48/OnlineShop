@@ -1,0 +1,97 @@
+directive @aws_auth(
+    cognito_groups: [String!]
+) on FIELD_DEFINITION | OBJECT
+
+type Product {
+    Id: ID!
+    Name: String!
+    Description: String
+    Price: Float!
+    Currency: String!
+    Weight: Int!
+    ImageUrl: String
+    Supplier: String
+    Category: ID!
+}
+
+type ProductCategory {
+    Id: ID!
+    Name: String!
+    Description: String
+    Products: [Product]
+}
+
+type Query {
+    listCategories: [ProductCategory]
+    getCategoryById(Id: ID!): ProductCategory
+    listProductsByCategory(Category: ID!): [Product]
+    getProductById(Id: ID!): Product
+}
+
+input ProductInput {
+    Name: String!
+    Description: String
+    Price: Float!
+    Currency: String!
+    Weight: Int!
+    ImageUrl: String
+    Supplier: String
+    Category: ID!
+}
+
+input CategoryInput {
+    Name: String!
+    Description: String
+}
+
+type Order {
+    Id: ID!
+    CustomerEmail: String!
+    ShippingAddress: String!
+    OrderDetails: [OrderDetail]!
+    OrderDate: String!
+}
+
+type OrderDetail {
+    ProductId: ID!
+    Quantity: Int!
+}
+
+input OrderInput {
+    ShippingAddress: String!
+    OrderDetails: [OrderDetailInput]!
+}
+
+input OrderDetailInput {
+    ProductId: ID!
+    Quantity: Int!
+}
+
+type Mutation {
+    addProduct(product: ProductInput!): Product @aws_auth(cognito_groups: ["Admin"])
+    addCategory(category: CategoryInput!): ProductCategory @aws_auth(cognito_groups: ["Admin"])
+    updateProduct(
+        Id: ID!
+        Name: String
+        Description: String
+        Price: Float
+        Currency: String
+        Weight: Int
+        ImageUrl: String
+        Supplier: String
+        Category: ID
+    ): Product @aws_auth(cognito_groups: ["Admin"])
+    updateCategory(
+        Id: ID!
+        Name: String
+        Description: String
+    ): ProductCategory @aws_auth(cognito_groups: ["Admin"])
+    deleteProduct(Id: ID!): Boolean @aws_auth(cognito_groups: ["Admin"])
+    deleteCategory(Id: ID!): Boolean @aws_auth(cognito_groups: ["Admin"])
+    placeOrder(order: OrderInput!): String @aws_auth(cognito_groups: ["Customer"])
+}
+
+schema {
+    query: Query
+    mutation: Mutation
+}

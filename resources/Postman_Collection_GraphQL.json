@@ -1,0 +1,351 @@
+{
+	"info": {
+		"_postman_id": "2dcb3831-a214-493e-977d-1d024824ab0c",
+		"name": "Postman Collection (from GraphQL) Copy",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "29863241"
+	},
+	"item": [
+		{
+			"name": "mutations",
+			"item": [
+				{
+					"name": "addProduct",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "mutation addProduct ($product: ProductInput!) {\n    addProduct (product: $product) {\n        Id\n        Name\n        Description\n        Price\n        Currency\n        Weight\n        ImageUrl\n        Supplier\n        Category\n    }\n}",
+								"variables": "{\n  \"product\": {\n    \"Name\": \"\",\n    \"Description\": \"\",\n    \"Price\": \"\",\n    \"Currency\": \"\",\n    \"Weight\": 0,\n    \"ImageUrl\": \"\",\n    \"Supplier\": \"\",\n    \"Category\": 0\n  }\n}"
+							}
+						},
+						"url": {
+							"raw": "{{url}}",
+							"host": [
+								"{{url}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "addCategory",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "mutation addCategory ($category: CategoryInput!) {\n    addCategory (category: $category) {\n        Id\n        Name\n        Description\n    }\n}",
+								"variables": "{\n  \"category\": {\n    \"Name\": \"\",\n    \"Description\": \"\"\n  }\n}"
+							}
+						},
+						"url": {
+							"raw": "{{url}}",
+							"host": [
+								"{{url}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "updateProduct",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "mutation updateProduct ($Id: ID!, $Name: String, $Description: String, $Price: Float, $Currency: String, $Weight: Int, $ImageUrl: String, $Supplier: String, $Category: ID) {\n    updateProduct (Id: $Id, Name: $Name, Description: $Description, Price: $Price, Currency: $Currency, Weight: $Weight, ImageUrl: $ImageUrl, Supplier: $Supplier, Category: $Category) {\n        Id\n        Name\n        Description\n        Price\n        Currency\n        Weight\n        ImageUrl\n        Supplier\n        Category\n    }\n}",
+								"variables": "{\n  \"Id\": 0,\n  \"Name\": \"\",\n  \"Description\": \"\",\n  \"Price\": \"\",\n  \"Currency\": \"\",\n  \"Weight\": 0,\n  \"ImageUrl\": \"\",\n  \"Supplier\": \"\",\n  \"Category\": 0\n}"
+							}
+						},
+						"url": {
+							"raw": "{{url}}",
+							"host": [
+								"{{url}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "updateCategory",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "mutation updateCategory ($Id: ID!, $Name: String, $Description: String) {\n    updateCategory (Id: $Id, Name: $Name, Description: $Description) {\n        Id\n        Name\n        Description\n    }\n}",
+								"variables": "{\n  \"Id\": 0,\n  \"Name\": \"\",\n  \"Description\": \"\"\n}"
+							}
+						},
+						"url": {
+							"raw": "{{url}}",
+							"host": [
+								"{{url}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "deleteProduct",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "mutation deleteProduct ($Id: ID!) {\n    deleteProduct (Id: $Id)\n}",
+								"variables": "{\n  \"Id\": 0\n}"
+							}
+						},
+						"url": {
+							"raw": "{{url}}",
+							"host": [
+								"{{url}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "deleteCategory",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "mutation deleteCategory ($Id: ID!) {\n    deleteCategory (Id: $Id)\n}",
+								"variables": "{\n  \"Id\": 0\n}"
+							}
+						},
+						"url": {
+							"raw": "{{url}}",
+							"host": [
+								"{{url}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "placeOrder",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "mutation placeOrder ($order: OrderInput!) {\n    placeOrder (order: $order) {\n        Id\n        CustomerEmail\n        ShippingAddress\n        OrderDate\n    }\n}",
+								"variables": "{\n  \"order\": {\n    \"ShippingAddress\": \"\",\n    \"OrderDetails\": {\n      \"ProductId\": 0,\n      \"Quantity\": 0\n    }\n  }\n}"
+							}
+						},
+						"url": {
+							"raw": "{{url}}",
+							"host": [
+								"{{url}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "queries",
+			"item": [
+				{
+					"name": "listCategories",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "query listCategories {\n    listCategories {\n        Id\n        Name\n        Description\n    }\n}",
+								"variables": "{}"
+							}
+						},
+						"url": {
+							"raw": "{{url}}",
+							"host": [
+								"{{url}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getCategoryById",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "query getCategoryById ($Id: ID!) {\n    getCategoryById (Id: $Id) {\n        Id\n        Name\n        Description\n    }\n}",
+								"variables": "{\n  \"Id\": 0\n}"
+							}
+						},
+						"url": {
+							"raw": "{{url}}",
+							"host": [
+								"{{url}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "listProductsByCategory",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "query listProductsByCategory ($Category: ID!) {\n    listProductsByCategory (Category: $Category) {\n        Id\n        Name\n        Description\n        Price\n        Currency\n        Weight\n        ImageUrl\n        Supplier\n        Category\n    }\n}",
+								"variables": "{\n  \"Category\": 0\n}"
+							}
+						},
+						"url": {
+							"raw": "{{url}}",
+							"host": [
+								"{{url}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getProductById",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "query getProductById ($Id: ID!) {\n    getProductById (Id: $Id) {\n        Id\n        Name\n        Description\n        Price\n        Currency\n        Weight\n        ImageUrl\n        Supplier\n        Category\n    }\n}",
+								"variables": "{\n  \"Id\": 0\n}"
+							}
+						},
+						"url": {
+							"raw": "{{url}}",
+							"host": [
+								"{{url}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "url",
+			"value": "https://<GraphQL endpoint>.appsync-api.us-east-1.amazonaws.com/graphql",
+			"type": "any"
+		},
+		{
+			"key": "jwt_token",
+			"value": ""
+		}
+	]
+}
